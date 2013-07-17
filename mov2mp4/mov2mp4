@@ -1,0 +1,59 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import glob
+import argparse
+import fnmatch
+
+IN_FILE_EXT = 'mov'
+OUT_FILE_EXT = 'mp4'
+
+parser = argparse.ArgumentParser()
+parser.add_argument('paths', nargs='+',
+                    help='paths to files and/or directories to convert')
+parser.add_argument('--remove', dest='remove', action='store_true',
+                    help='remove file(s) after successful conversion')
+parser.add_argument('--recursive', dest='recursive', action='store_true',
+                    help='scan directories recursively in search for files to convert')
+args = parser.parse_args()
+
+def scan(directory, pattern, recursive=False):
+  result = []
+  if recursive:
+    retriever = lambda result, dirname, names: \
+                  result.extend([os.path.join(dirname, n) for n in names if fnmatch.fnmatch(n, pattern)])
+    os.path.walk(directory, retriever, result)
+  else:
+    result = glob.glob(os.path.join(directory, pattern))
+
+  return result
+
+infiles = []
+for path in args.paths:
+  if not os.path.isabs(path):
+    path = os.path.abspath(path)
+
+  if not os.path.exists(path):
+    print >>sys.stderr, "Path '%s' does not exist" % path
+
+  pattern = '*.%s' % IN_FILE_EXT
+  if os.path.isdir(path):
+    infiles.extend(scan(path, pattern, args.recursive))
+  elif os.path.isfile(path):
+    if not fnmatch.fnmatch(path, pattern):
+      print >>sys.stderr, "File '%s' name does not end with '.mov'...skipping it" % path
+      continue
+    infiles.append(path)
+
+for infile in infiles:
+  outfile = '%s.%s' % (infile[:-(len(OUT_FILE_EXT)+1)], OUT_FILE_EXT)
+#  Already provided by avconv
+#  if os.path.exists(outfile):
+#    answer = raw_input("Output file already exist, overwrite it? [y/N]: ")
+#    if answer is not 'y':
+#      continue
+  retcode = os.system('avconv -i "%s" -c:v copy -c:a copy "%s"' % (infile, outfile))
+  if os.WIFEXITED(retcode) and os.WEXITSTATUS(retcode) == 0:
+    if args.remove:
+      os.unlink(infile)

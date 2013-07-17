@@ -1,0 +1,16 @@
+#!/bin/bash
+
+if [ $# -ne 3 ]; then
+  echo "usage: num2num [ibase] [obase] [value]"
+  exit 1;
+fi
+
+IBASE=$1
+OBASE=$2
+VALUE=$3
+
+if [ $IBASE -eq 16 ]; then
+  VALUE=`echo "$VALUE" | tr '[:lower:]' '[:upper:]' | sed -e 's/0X//'`;
+fi
+
+echo "obase=$OBASE; ibase=$IBASE; $VALUE"|bc
