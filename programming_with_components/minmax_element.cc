@@ -1,9 +1,12 @@
 #include <utility>
+#include <functional>
 #include <iostream>
 #include <vector>
   
 // Requirements:
 //  I is ForwardIterator
+//  http://www.cplusplus.com/reference/iterator/ForwardIterator/
+//
 //  Compare is StrictWeakOrdering on I::value_type
 //  http://en.wikipedia.org/wiki/Strict_weak_order
 template<typename I, typename Compare>
