@@ -3,6 +3,8 @@
 #include <cerrno>
 #include <cstring>
 #include <sys/time.h>
+#include <termios.h>
+#include <unistd.h>
 
 void strip_new_line(char* str)
 {
@@ -21,8 +23,16 @@ unsigned get_time()
 
 int main()
 {
+    termios old_term;
+    tcgetattr(fileno(stdin), &old_term);
+
+    termios new_term = old_term;
+    new_term.c_lflag &= ~(ICANON | ECHO);
+    new_term.c_cc[VMIN] = 1;
+    tcsetattr(fileno(stdin), TCSANOW, &new_term);
+    
     unsigned last_time = get_time();
-    struct pollfd fds[1] = {};
+    pollfd fds[1] = {};
     fds[0].fd = fileno(stdin);
     fds[0].events = POLLIN;
     int timeout = 1000; // in mili
@@ -41,15 +51,17 @@ int main()
         }
         else if (0 < ret)
         {
-            printf("readable\n");
+            printf("read something\n");
             if (fds[0].revents & POLLIN)
             {
                 char buffer[1024] = {};
-                fgets(buffer, 1024, stdin);
-                strip_new_line(buffer);
-                printf("read: %s\n", buffer);
-                if (!strcmp(buffer, "quit"))
+                ssize_t readBytes = -1;
+                int c = fgetc(stdin);
+                printf("character: %d\n", c);
+                if (c == 'q')
                 {
+                    printf("restoring terminal...\n");
+                    tcsetattr(fileno(stdin), TCSANOW, &old_term);
                     printf("quitting...\n");
                     break;
                 }
