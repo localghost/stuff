@@ -26,6 +26,7 @@ void pusher(message_queue& queue)
         queue.push(std::string("i: ") + i);
         std::this_thread::sleep_for(std::chrono::milliseconds{30});
     }
+    queue.push("quit");
 }
 
 void poper(message_queue& queue)
@@ -35,7 +36,7 @@ void poper(message_queue& queue)
         std::string msg;
         queue.pop(msg);
         std::cout << msg << std::endl;
-        if (msg == "i: 99")
+        if (msg == "quit")
             break;
     } 
 }
