@@ -11,6 +11,7 @@ const unsigned counter_max = 20;
 
 void setup()
 {
+    //counter.store(counter_max, std::memory_order_release);
     counter.store(counter_max, std::memory_order_relaxed);
 }
 
@@ -18,6 +19,7 @@ void consume()
 {
     std::this_thread::sleep_for(std::chrono::seconds(2));
     int value;
+    //while ((value = counter.fetch_sub(1, std::memory_order_acquire)) <= 0)
     while ((value = counter.fetch_sub(1, std::memory_order_relaxed)) <= 0)
     {
         std::this_thread::sleep_for(std::chrono::seconds(2));
