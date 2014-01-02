@@ -1,5 +1,6 @@
 #include <atomic>
 #include <thread>
+#include <mutex>
 #include <iostream>
 #include <chrono>
 #include <sstream>
@@ -8,6 +9,7 @@
 std::atomic<int> counter;
 std::mutex m;
 const unsigned counter_max = 20;
+const unsigned number_of_threads = counter_max;
 
 void setup()
 {
@@ -17,7 +19,6 @@ void setup()
 
 void consume()
 {
-    std::this_thread::sleep_for(std::chrono::seconds(2));
     int value;
     //while ((value = counter.fetch_sub(1, std::memory_order_acquire)) <= 0)
     while ((value = counter.fetch_sub(1, std::memory_order_relaxed)) <= 0)
@@ -37,7 +38,7 @@ int main()
 {
     std::thread init(setup);
     std::vector<std::thread> threads;
-    for (unsigned i = 0; i < counter_max; ++i)
+    for (unsigned i = 0; i < number_of_threads; ++i)
         threads.push_back(std::thread{consume});
     init.join();
     for (auto& th : threads)
