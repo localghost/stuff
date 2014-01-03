@@ -17,7 +17,7 @@ struct Foo
         other.the_number = 0;
     }
 
-    Foo(unsigned n) : the_number(n) {}
+    explicit Foo(unsigned n) : the_number(n) {}
 };
 
 int main()
