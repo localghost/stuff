@@ -73,3 +73,30 @@ colorscheme desert
 set guioptions-=T
 
 set history=200
+
+set path=./,/usr/include,/usr/include/c++/4.6,
+
+map <silent> sw :call SwitchSourceHeader()<CR>
+
+function SwitchSourceHeader()
+    let dest = ''
+    let ext = expand('%:e')
+    let current = expand('%:t:r')
+    let root = expand('%:p:h')
+    if ext == 'h'
+        for source_ext in ['.cpp', '.cc', '.c']
+            let dest = root . '/' . current . source_ext
+            if filereadable(dest)
+               break 
+            endif
+            let dest = ''
+        endfor
+    elseif ext == 'cpp' || ext == 'cc' || ext == 'c'
+        let dest = root . '/' . current . '.h'
+    endif
+    if dest != ''
+        execute 'edit' dest
+    else
+        echoerr 'Complementary file not found'
+    endif
+endfunction
