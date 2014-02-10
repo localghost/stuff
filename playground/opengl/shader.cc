@@ -20,11 +20,14 @@ shader_ptr shader::from_source(GLenum type, const std::string& source)
     return shader_ptr{new shader{type, source}};
 }
 
-shader::shader(GLenum type, const std::string& source) noexcept
+shader::shader(GLenum type, const std::string& source)
 {
     handle_ = glCreateShader(type);
+    if (0 == handle_)
+        throw std::exception{}; // FIXME Include error code
     const char* source_ptr = source.c_str();
     glShaderSource(handle_, 1, &source_ptr, NULL);
+    // FIXME Get error and throw exception
 }
 
 shader::~shader()
@@ -33,7 +36,7 @@ shader::~shader()
         glDeleteShader(handle_);
 }
 
-bool shader::compile()
+bool shader::compile() noexcept
 {
     glCompileShader(handle_);
 
@@ -42,7 +45,7 @@ bool shader::compile()
     return (GL_TRUE == status);
 }
 
-std::string shader::get_log()
+std::string shader::get_log() const
 {
     GLint log_length;
     glGetShaderiv(handle_, GL_INFO_LOG_LENGTH, &log_length);

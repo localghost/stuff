@@ -15,13 +15,13 @@ class program
     
     void attach_shader(shader_ptr sh);
     
-    bool compile();
+    bool compile() noexcept;
     
-    std::string get_log() const;
+    std::string get_log() const noexcept;
     
-    void enable();
+    void enable() noexcept;
     
-    void disable();
+    void disable() noexcept;
 
 private:
     GLuint handle_;

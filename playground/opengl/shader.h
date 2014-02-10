@@ -20,14 +20,14 @@ public:
 
     ~shader();
 
-    bool compile();
+    bool compile() noexcept;
 
-    std::string get_log();
+    std::string get_log() const;
 
 private:
     friend class program;
     
-    shader(GLenum type, const std::string& source) noexcept;
+    shader(GLenum type, const std::string& source);
     
     GLuint get_handle() const noexcept { return handle_; }
     
