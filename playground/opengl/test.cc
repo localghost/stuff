@@ -1,7 +1,7 @@
 #include <iostream>
+#include "shader.h"
 #include <GLFW/glfw3.h>
 
-#include "shader.h"
 
 void on_error(int code, const char* description)
 {

@@ -4,7 +4,7 @@
 #ifdef __APPLE_CC__
 #include <OpenGL/gl.h>
 #else
-#include <GL/gl.h>
+#include <GL/glew.h>
 #endif
 
 #endif

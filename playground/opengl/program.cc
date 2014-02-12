@@ -20,7 +20,7 @@ void program::attach_shader(shader_ptr sh)
     shaders_.push_back(std::move(sh));
 }
 
-bool program::compile()
+bool program::compile() noexcept
 {
     for (const auto& sh : shaders_)
         glAttachShader(handle_, sh->get_handle());
@@ -35,7 +35,7 @@ bool program::compile()
     return (GL_TRUE == status);
 }
 
-std::string program::get_log() const
+std::string program::get_log() const noexcept
 {
     GLint log_length;
     glGetProgramiv(handle_, GL_INFO_LOG_LENGTH, &log_length);
@@ -46,12 +46,12 @@ std::string program::get_log() const
     return log_data.get();
 }
 
-void program::enable()
+void program::enable() noexcept
 {
     glUseProgram(handle_);
 }
 
-void program::disable()
+void program::disable() noexcept
 {
     glUseProgram(0);
 }

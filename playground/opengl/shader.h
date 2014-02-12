@@ -6,8 +6,13 @@
 #include "opengl.h"
 
 namespace gl {
+
 class shader;
+#if __APPLE_CC__ || (__GNUC__ >= 4 && __GNUC_MINOR__ >= 7)
 using shader_ptr = std::shared_ptr<shader>;
+#else
+typedef std::shared_ptr<shader> shader_ptr;
+#endif
 
 class shader
 {
