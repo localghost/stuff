@@ -4,11 +4,12 @@
 #include <string>
 #include <memory>
 #include "opengl.h"
+#include "inspect.h"
 
 namespace gl {
 
 class shader;
-#if __APPLE_CC__ || (__GNUC__ >= 4 && __GNUC_MINOR__ >= 7)
+#ifdef CPP11
 using shader_ptr = std::shared_ptr<shader>;
 #else
 typedef std::shared_ptr<shader> shader_ptr;
