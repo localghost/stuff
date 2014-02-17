@@ -3,6 +3,7 @@
 
 #include <string>
 #include <memory>
+#include <boost/noncopyable.hpp>
 #include "opengl.h"
 #include "inspect.h"
 
@@ -15,14 +16,11 @@ using shader_ptr = std::shared_ptr<shader>;
 typedef std::shared_ptr<shader> shader_ptr;
 #endif
 
-class shader
+class shader : ::boost::noncopyable
 {
 public:
     static shader_ptr from_file(GLenum type, const std::string& filename);
     static shader_ptr from_source(GLenum type, const std::string& source);
-
-    shader(const shader&) = delete;
-    shader& operator=(const shader&) = delete;
 
     ~shader();
 
