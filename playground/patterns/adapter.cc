@@ -2,7 +2,7 @@
 #include <chrono>
 #include <iostream>
 #include <string>
-#include <exception>
+#include <stdexcept>
 
 class DatePicker
 {
@@ -22,7 +22,7 @@ public:
         auto time = *localtime(&seconds);
         char result[32] = {};
         if (0 == std::strftime(result, 32, "%Y-%m-%d %H:%M", &time))
-            throw std::runtime_error("time exceeded the buffer");
+            throw std::runtime_error{"time exceeded the buffer"};
         return result;
     }
 
@@ -30,8 +30,26 @@ private:
     DatePicker picker;
 };
 
+
+class ClassAdaptor : private DatePicker
+{
+public:
+    std::string getDate() const
+    {
+        auto seconds = DatePicker::getDate();
+        auto time = *localtime(&seconds);
+        char result[32] = {};
+        if (0 == std::strftime(result, 32, "%Y-%m-%d %H:%M", &time))
+            throw std::runtime_error{"time exceeded the buffer"};
+        return result;
+    }
+};
+
 int main()
 {
-    ObjectAdaptor adaptor;
-    std::cout << adaptor.getDate() << std::endl;
+    ObjectAdaptor obj_adaptor;
+    std::cout << obj_adaptor.getDate() << std::endl;
+
+    ClassAdaptor class_adaptor;
+    std::cout << class_adaptor.getDate() << std::endl;
 }
