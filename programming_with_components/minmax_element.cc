@@ -19,7 +19,7 @@ std::pair<I, I> minmax_element(I first, I last, Compare compare)
   
   I max = first;
 
-  if (compare(*min, *max)) std::swap(min, max);
+  if (!compare(*min, *max)) std::swap(min, max);
 
   if (++first == last) return std::make_pair(min, max);
 
@@ -28,8 +28,8 @@ std::pair<I, I> minmax_element(I first, I last, Compare compare)
     I potential_min = first;
     if (++first == last)
     {
-      if (compare(*min, *potential_min)) min = potential_min;
-      else if (!compare(*max, *potential_min)) max = potential_min;
+      if (!compare(*min, *potential_min)) min = potential_min;
+      else if (compare(*max, *potential_min)) max = potential_min;
       break;
     }
 
