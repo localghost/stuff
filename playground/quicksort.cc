@@ -67,8 +67,8 @@ int main()
     for (const auto& i : data_base)
       data.emplace_back(i);
     print(data.begin(), data.end(), "IN: ");
-//    naive(data.begin(), data.end(), std::less<op_counter<int>>());
-    sort(data.begin(), data.end(), std::less<op_counter<int>>());
+    naive(data.begin(), data.end(), std::less<op_counter<int>>());
+//    sort(data.begin(), data.end(), std::less<op_counter<int>>());
     print(data.begin(), data.end(), "OUT: ");
     print_results<int>();
 }
