@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <iterator>
 #include <functional>
+
+#include "op_counter.h"
  
 using namespace std;
  
@@ -22,50 +24,51 @@ void sort(T begin, T end) {
     }
 }
 
-// I is at least ForwardIterator
+// I is at least BidirectionalIterator
 // Compare is StrictWeakOrdering on I::value_type
 template<typename I, typename Compare>
-void naive(I begin, I end, Compare compare)
+void naive(I first, I last, Compare compare)
 {
-    if (begin == end) return;
-    auto old_begin = begin;
-    auto old_end = end;
+    if (first == last) return;
+
+    auto begin = first;
+    auto end = last;
     
-    auto pivot = begin;
-    std::cout << "pivot: " << *pivot << std::endl;
+    auto pivot = first;
 
-//    ++begin;
-
-    while (begin != end)
+    while (first != last)
     {
-        ++begin;
-        while (compare(*begin, *pivot) && (++begin != end));
-        while ((begin != --end) && !compare(*end, *pivot));
-        std::cout << "swapping: " << *begin << " and " << *end << std::endl;
-        swap(*begin, *end);
+        ++first;
+        while (compare(*first, *pivot) && (++first != last));
+        if (first == last) break;
+        while ((first != --last) && !compare(*last, *pivot));
+        swap(*first, *last);
     }
-    auto partition_point = begin;
-    std::cout << "partition: " << *partition_point << std::endl;
-    swap(*pivot, *--partition_point);
+    auto partition = --first;
+    swap(*pivot, *partition);
 
-//    I partition_point = std::partition(begin, end, [compare, pivot](const typename I::value_type& val)
-//    {
-//        return compare(val, pivot);
-//    });
-//    I pivot_point = partition_point; //std::find(begin, end, pivot);
-//    std::swap(*pivot_point, *partition_point);
+    naive(begin, partition, compare);
+    naive(++partition, end, compare);
+}
 
-    naive(old_begin, partition_point, compare);    
-//    partition_point = begin;
-    naive(++partition_point, old_end, compare);
+template<typename I>
+void print(I first, I last, const std::string& msg = std::string())
+{
+  std::cout << msg;
+  for (auto it = first; it != last; ++it)
+    std::cout << *it << " ";
+  std::cout << std::endl;
 }
 
 int main()
 {
-    std::vector<int> data = {-72, 3, 6, 45, 9, 0, -34, 2, 9};
-    naive(data.begin(), data.end(), std::less<int>());
-//    sort(data.begin(), data.end());
-    for (const auto& i : data)
-        std::cout << i << " ";
-    std::cout << std::endl;
+    std::vector<int> data_base = {-72, 3, 6, 45, -72, 9, 0, -34, 2, 9};
+    std::vector<op_counter<int>> data;
+    for (const auto& i : data_base)
+      data.emplace_back(i);
+    print(data.begin(), data.end(), "IN: ");
+//    naive(data.begin(), data.end(), std::less<op_counter<int>>());
+    sort(data.begin(), data.end(), std::less<op_counter<int>>());
+    print(data.begin(), data.end(), "OUT: ");
+    print_results<int>();
 }
