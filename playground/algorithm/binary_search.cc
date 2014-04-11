@@ -2,6 +2,7 @@
 #include <functional>
 #include <vector>
 
+// requires [begins, end) sorted
 template<typename I, typename T, typename Compare = std::less<T>>
 I bsearch(I begin, I end, const T& val, Compare compare = Compare())
 {
