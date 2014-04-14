@@ -12,43 +12,35 @@
  
 using namespace std;
  
-template <typename T>
-void sort(T begin, T end) {
-    if (begin != end) {
-        T middle = std::partition (begin, end, std::bind2nd(
-                    std::less<typename iterator_traits<T>::value_type>(), *begin));
-        sort (begin, middle);
-//        sort (max(begin + 1, middle), end);
-        T new_middle = begin;
-        sort (++new_middle, end);
-    }
-}
+// TODO Add stable version
 
 // I is at least BidirectionalIterator
 // Compare is StrictWeakOrdering on I::value_type
 template<typename I, typename Compare>
-void naive(I first, I last, Compare compare)
+void quicksort(I first, I last, Compare compare)
 {
     if (first == last) return;
 
     auto begin = first;
     auto end = last;
     
-    auto pivot = first;
+    auto pivot = first + (std::distance(first, last) / 2);
+    swap(*pivot, *first);
+    pivot = first;
+    ++first;
 
     while (first != last)
     {
-        ++first;
-        while (compare(*first, *pivot) && (++first != last));
+        while (!compare(*pivot, *first) && (++first != last));
         if (first == last) break;
-        while ((first != --last) && !compare(*last, *pivot));
+        while ((first != --last) && compare(*pivot, *last));
         swap(*first, *last);
     }
     auto partition = --first;
     swap(*pivot, *partition);
 
-    naive(begin, partition, compare);
-    naive(++partition, end, compare);
+    quicksort(begin, partition, compare);
+    quicksort(++partition, end, compare);
 }
 
 template<typename I>
@@ -62,12 +54,12 @@ void print(I first, I last, const std::string& msg = std::string())
 
 int main()
 {
-    std::vector<int> data_base = {-72, 3, 6, 45, -72, 9, 0, -34, 2, 9};
+    std::vector<int> data_base = {7, -72, 3, 6, 45, -72, 9, 0, -34, 2, 9};
     std::vector<op_counter<int>> data;
     for (const auto& i : data_base)
       data.emplace_back(i);
     print(data.begin(), data.end(), "IN: ");
-    naive(data.begin(), data.end(), std::less<op_counter<int>>());
+    quicksort(data.begin(), data.end(), std::less<op_counter<int>>());
 //    sort(data.begin(), data.end(), std::less<op_counter<int>>());
     print(data.begin(), data.end(), "OUT: ");
     print_results<int>();
