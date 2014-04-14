@@ -41,17 +41,17 @@ class op_counter
 public:
   op_counter() : op_counter(0) { }
 
-  explicit op_counter(T value) : value(std::move(value)), marker_(++marker_producer)
+  explicit op_counter(T value) : value_(std::move(value)), marker_(++marker_producer)
   {
     ++counts[construction];
   }
 
-  op_counter(const op_counter& other) : value(other.value), marker_(other.marker_)
+  op_counter(const op_counter& other) : value_(other.value_), marker_(other.marker_)
   {
     ++counts[copy];
   }
 
-  op_counter(op_counter&& other) : value(std::move(other.value)), marker_(other.marker_)
+  op_counter(op_counter&& other) : value_(std::move(other.value_)), marker_(other.marker_)
   {
     ++counts[move];
   }
@@ -59,7 +59,7 @@ public:
   op_counter& operator=(const op_counter& other)
   {
     ++counts[assignment];
-    value = other.value;
+    value_ = other.value_;
     marker_ = other.marker_;
     return *this;
   }
@@ -67,7 +67,7 @@ public:
   op_counter& operator=(op_counter&& other)
   {
     ++counts[move_assignment];
-    value = std::move(other.value);
+    value_ = std::move(other.value_);
     marker_ = other.marker_;
     return *this;
   }
@@ -77,10 +77,14 @@ public:
     ++counts[destruction];
   }
 
+  T value() const { return value_; }
+
+  unsigned marker() const { return marker_; }
+
   friend bool operator==(const op_counter& x, const op_counter& y)
   {
     ++counts[equality];
-    return (x.value == y.value);
+    return (x.value_ == y.value_);
   }
 
   friend bool operator!=(const op_counter& x, const op_counter& y)
@@ -91,7 +95,7 @@ public:
   friend bool operator<(const op_counter& x, const op_counter& y)
   {
     ++counts[comparison];
-    return (x.value < y.value);
+    return (x.value_ < y.value_);
   }
 
   friend bool operator>(const op_counter& x, const op_counter& y)
@@ -111,8 +115,7 @@ public:
 
   friend std::ostream& operator<<(std::ostream& os, const op_counter& x)
   {
-    os << x.marker_ << ',' << x.value;
-//    os << x.value;
+    os << x.value_;
     return os;
   }
 
@@ -121,7 +124,7 @@ public:
 private:
   static std::map<operation, unsigned> counts;
   static unsigned int marker_producer;
-  T value;
+  T value_;
   unsigned marker_;
 };
 
