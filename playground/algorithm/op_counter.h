@@ -41,17 +41,17 @@ class op_counter
 public:
   op_counter() : op_counter(0) { }
 
-  explicit op_counter(T value) : value(std::move(value))
+  explicit op_counter(T value) : value(std::move(value)), marker_(++marker_producer)
   {
     ++counts[construction];
   }
 
-  op_counter(const op_counter& other) : value(other.value)
+  op_counter(const op_counter& other) : value(other.value), marker_(other.marker_)
   {
     ++counts[copy];
   }
 
-  op_counter(op_counter&& other) : value(std::move(other.value))
+  op_counter(op_counter&& other) : value(std::move(other.value)), marker_(other.marker_)
   {
     ++counts[move];
   }
@@ -60,6 +60,7 @@ public:
   {
     ++counts[assignment];
     value = other.value;
+    marker_ = other.marker_;
     return *this;
   }
 
@@ -67,6 +68,7 @@ public:
   {
     ++counts[move_assignment];
     value = std::move(other.value);
+    marker_ = other.marker_;
     return *this;
   }
 
@@ -109,7 +111,8 @@ public:
 
   friend std::ostream& operator<<(std::ostream& os, const op_counter& x)
   {
-    os << x.value;
+    os << x.marker_ << ',' << x.value;
+//    os << x.value;
     return os;
   }
 
@@ -117,8 +120,9 @@ public:
 
 private:
   static std::map<operation, unsigned> counts;
-
+  static unsigned int marker_producer;
   T value;
+  unsigned marker_;
 };
 
 template<typename T, typename tag = T>
@@ -130,5 +134,8 @@ void print_results()
 
 template<typename T, typename tag>
 std::map<operation, unsigned> op_counter<T, tag>::counts;
+
+template<typename T, typename tag>
+unsigned op_counter<T, tag>::marker_producer = 0;
 
 #endif
