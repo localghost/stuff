@@ -3,8 +3,8 @@
 #include <vector>
 
 // requires [begins, end) sorted
-template<typename I, typename T, typename Compare = std::less<T>>
-I bsearch(I begin, I end, const T& val, Compare compare = Compare())
+template<typename I, typename T, typename Compare>
+I bsearch(I begin, I end, const T& val, Compare compare)
 {
     if (begin == end) return end;
 
@@ -32,7 +32,7 @@ int main()
 {
     std::vector<int> data{1, 2, 3, 4, 5, 6, 7, 8, 8, 9};
 //    std::vector<int> data{9, 8, 8, 7, 6, 5};
-    auto it = bsearch(data.begin(), data.end(), 10);
+    auto it = bsearch(data.begin(), data.end(), 10, std::less<int>());
 //    auto it = bsearch(data.begin(), data.end(), 8, std::greater<int>());
     if (it != data.end())
         std::cout << "found: " << *it << std::endl;
