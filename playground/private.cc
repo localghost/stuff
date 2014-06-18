@@ -17,6 +17,8 @@ struct Baz
 };
 
 template class Baz<&Foo::foo, &Foo::member>;
+
+// Not sure if the two declarations below should be necessary according to the std
 FooFun fun(FooFun);
 FooMember member(FooMember);
 
