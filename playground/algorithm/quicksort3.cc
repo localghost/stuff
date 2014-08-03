@@ -23,6 +23,9 @@ void quicksort3(I first, I last, Compare compare)
     auto end = last;
     auto current = begin;
 
+    // in original implementation there is <= comparison but that
+    // would require RandomAccessIterators so instead last pointing
+    // to the last element it points to the one past last
     while (current != last)
     {
       if (compare(*current, *first))
