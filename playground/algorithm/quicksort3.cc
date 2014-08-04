@@ -1,48 +1,69 @@
+#include <functional>
 #include <iostream>
 #include <vector>
-#include <functional>
+#include <iterator>
 
 #include "utils.h"
+#include "../random_sequence.h"
+#include "../concepts.h"
  
-using namespace std;
- 
-// I is at least BidirectionalIterator
-// Compare is StrictWeakOrdering on I::value_type
-template<typename I, typename Compare>
+// This file contains implementation of the 3-way quick-sort algorithm.
+//
+// It takes first element as the partition point so if one expects input
+// to be sorted to some extent one might want to run the input data through
+// std::random_shuffle() first or uncomment the part of the code that
+// selects an element from the middle of the input range as the partition point.
+
+template<BidirectionalIterator I, StrictWeakOrdering Compare>
 void quicksort3(I first, I last, Compare compare)
 {
-    if (first == last) return;
+  using namespace std; // for ADL for swap()
 
-    auto begin = first;
-    auto end = last;
-    auto current = begin;
+  if (first == last) return;
 
-    // in original implementation there is <= comparison but that
-    // would require RandomAccessIterators so instead last pointing
-    // to the last element it points to the one past last
-    while (current != last)
-    {
-      if (compare(*current, *first))
-        swap(*current++, *first++);
-      else if (compare(*first, *current))
-        // first decrement since last points to the element one past the last one
-        swap(*current, *--last);
-      else
-        ++current;
-    }
+  auto begin = first;
+  auto end = last;
+  auto current = begin;
 
-    quicksort3(begin, first, compare);
-    quicksort3(last, end, compare);
+  // Uncomment to select partition point from the middle of the input
+  // range. Remember, however, that if I is not RandomAccessIterator
+  // it will take linear time to count the distance.
+  // auto middle = first + std::distance(first, last) / 2;
+  // swap(*first, *middle);
+
+  // in original implementation there is <= comparison but that
+  // would require RandomAccessIterators so instead last pointing
+  // to the last element it points to the one past last
+  while (current != last)
+  {
+    if (compare(*current, *first))
+      swap(*current++, *first++);
+    else if (compare(*first, *current))
+      // first decrement since last points to the element one past the last one
+      swap(*current, *--last);
+    else
+      ++current;
+  }
+
+  quicksort3(begin, first, compare);
+  quicksort3(last, end, compare);
+}
+
+template<BidirectionalIterator I>
+void quicksort3(I first, I last)
+{
+  quicksort3(first, last, std::less<typename std::iterator_traits<I>::value_type>{});
 }
 
 int main()
 {
-    std::vector<int> data = {7, -72, 3, 6, 7, 45, -72, 9, 0, -34, 2, 9};
+    std::vector<int> data;
+    random_sequence(-100, 100, 20, std::back_inserter(data));
 
     std::cout << "input: ";
     print_range(data.begin(), data.end());
 
-    quicksort3(data.begin(), data.end(), std::less<int>());
+    quicksort3(data.begin(), data.end());
 
     std::cout << "output: ";
     print_range(data.begin(), data.end());
