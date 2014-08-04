@@ -1,11 +1,5 @@
 #include <iostream>
-#include <algorithm>
-#include <utility>
-#include <functional>
 #include <vector>
-
-#include <algorithm>
-#include <iterator>
 #include <functional>
 
 #include "utils.h"
@@ -31,7 +25,7 @@ void quicksort3(I first, I last, Compare compare)
       if (compare(*current, *first))
         swap(*current++, *first++);
       else if (compare(*first, *current))
-        // first decrement to since last points to end
+        // first decrement since last points to the element one past the last one
         swap(*current, *--last);
       else
         ++current;
