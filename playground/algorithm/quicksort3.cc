@@ -7,7 +7,8 @@
 #include "../random_sequence.h"
 #include "../concepts.h"
  
-// This file contains implementation of the 3-way quick-sort algorithm.
+// This file contains implementation of the quick-sort algorithm
+// with 3-way partitioning proposed by Edsger Dijkstra. 
 //
 // It takes first element as the partition point so if one expects input
 // to be sorted to some extent one might want to run the input data through
