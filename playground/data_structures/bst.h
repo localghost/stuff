@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <utility>
 #include <iterator>
+#include <memory>
 
 #include "iterator_adapter.h"
 
@@ -250,19 +251,20 @@ private:
   using iterator = iterator_adapter<titerator<t>>;
 
   using node_allocator = typename std::allocator_traits<allocator_type>::template rebind_alloc<node>;
-  // FIXME How to check whether underlying STL implementation uses template aliases
-//  using node_allocator = typename std::allocator_traits<allocator_type>::template rebind_alloc<node>::other;
+  using node_traits = std::allocator_traits<node_allocator>;
 
 public:
   bst()
   {
-    head_ = new node;
+    head_ = node_traits::allocate(allocator_, 1);
+    node_traits::construct(allocator_, std::addressof(head_));
   }
 
   ~bst()
   {
     remove_tree(root_);
-    delete head_;
+    node_traits::destroy(allocator_, std::addressof(head_));
+    node_traits::deallocate(allocator_, head_, 1);
   }
 
   // FIXME
@@ -289,7 +291,8 @@ public:
     if (!current) return;
     detach_node(current);
     --size_;
-    delete current;
+    node_traits::destroy(allocator_, std::addressof(current));
+    node_traits::deallocate(allocator_, current, 1);
   }
 
   value_type& operator[](const key_type& key)
@@ -380,7 +383,8 @@ private:
 
   node* insert_node(const value_type& value, node* parent)
   {
-    node* current = new node{value};
+    node* current = node_traits::allocate(allocator_, 1);
+    node_traits::construct(allocator_, std::addressof(current), value);
     attach_node(current, parent);
     ++size_;
     return current;
@@ -489,6 +493,7 @@ private:
   node* root_ = nullptr;
   node* leftmost_ = nullptr;
   size_type size_ = 0;
+  node_allocator allocator_;
 };
 
 #endif
