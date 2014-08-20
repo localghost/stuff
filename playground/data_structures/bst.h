@@ -224,13 +224,20 @@ private:
   state_type current_ = nullptr;
 };
 
-template<typename KeyType, typename MappedType>
+template<typename KeyType,
+         typename MappedType,
+         typename ComparatorType = std::less<KeyType>,
+         typename AllocatorType = std::allocator<std::pair<const KeyType, MappedType>>>
 class bst
 {
 public:
   typedef KeyType key_type;
   typedef MappedType mapped_type;
   typedef std::pair<const key_type, mapped_type> value_type;
+  typedef ComparatorType key_compare;
+//  typedef ... value_compare;
+  typedef AllocatorType allocator_type;
+
   typedef std::size_t size_type;
 
 private:
@@ -241,6 +248,10 @@ private:
 
   template<tree_traversal t>
   using iterator = iterator_adapter<titerator<t>>;
+
+  using node_allocator = typename std::allocator_traits<allocator_type>::template rebind_alloc<node>;
+  // FIXME How to check whether underlying STL implementation uses template aliases
+//  using node_allocator = typename std::allocator_traits<allocator_type>::template rebind_alloc<node>::other;
 
 public:
   bst()
