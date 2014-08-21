@@ -148,9 +148,8 @@ private:
     return n->value.first; 
   }
 
-  /// Depending on the value of `key` returns link to either left
-  /// or right child.
-  /// @precondition: n != nullptr 
+  // Depending on the value of `key` returns link to either left or right child.
+  // precondition: n != nullptr 
   node*& get_link(node* n, const key_type& key)
   {
     assert(n);
