@@ -1,229 +1,18 @@
-#ifndef DS_BST_
-#define DS_BST_
+#ifndef BST_
+#define BST_
 
 #include <iostream> // for LOG
 #include <cassert>
 #include <tuple>
 #include <cstddef>
 #include <utility>
-#include <iterator>
 #include <memory>
 
+#include "tree_utils.h"
+#include "tree_iterator.h"
 #include "iterator_adapter.h"
 
 #define LOG(msg) do { std::cout << msg << std::endl; } while (false)
-
-template<typename NodePtrType>
-NodePtrType tree_min(NodePtrType n)
-{
-  assert(n);
-  while (n->left)
-    n = n->left;
-  return n;
-}
-
-template<typename NodePtrType>
-NodePtrType tree_max(NodePtrType n)
-{
-  assert(n);
-  while (n->right)
-    n = n->right;
-  return n;
-}
-
-enum struct tree_traversal { preorder, inorder, postorder };
-
-template<tree_traversal, typename ValueType, typename NodePtrType> class tree_iterator;
-
-template<typename ValueType, typename NodePtrType>
-class tree_iterator<tree_traversal::inorder, ValueType, NodePtrType>
-{
-public:
-  typedef std::bidirectional_iterator_tag iterator_category;
-  typedef ValueType value_type;
-  typedef value_type& reference;
-  typedef value_type* pointer;
-  typedef NodePtrType state_type;
-  typedef ptrdiff_t difference_type; // templetise?
-
-  tree_iterator() = default;
-
-  explicit tree_iterator(state_type n) : current_{n} {}
-
-  void increment()
-  {
-    if (current_->right)
-    {
-      current_ = tree_min(current_->right);
-    }
-    else
-    {
-      while (current_->parent && current_->parent->right == current_)
-        current_ = current_->parent;
-      current_ = current_->parent;
-    }
-  }
-
-  void decrement()
-  {
-    if (current_->left)
-    {
-      current_ = tree_max(current_->left);
-    }
-    else
-    {
-      while (current_->parent && current_->parent->left == current_)
-        current_ = current_->parent;
-      current_ = current_->parent;
-    }
-  }
-
-  reference deref() const
-  {
-    return current_->value;
-  }
-
-  state_type state() const
-  {
-    return current_;
-  }
-
-private:
-  state_type current_ = nullptr;
-};
-
-template<typename ValueType, typename NodePtrType>
-class tree_iterator<tree_traversal::preorder, ValueType, NodePtrType>
-{
-public:
-  typedef std::bidirectional_iterator_tag iterator_category;
-  typedef ValueType value_type;
-  typedef value_type& reference;
-  typedef value_type* pointer;
-  typedef NodePtrType state_type;
-  typedef ptrdiff_t difference_type; // templetise?
-
-  tree_iterator() = default;
-
-  explicit tree_iterator(state_type n) : current_{n} {}
-
-  void increment()
-  {
-    if (current_->left)
-    {
-      current_ = current_->left;
-    }
-    else if (current_->right)
-    {
-      current_ = current_->right;
-    }
-    else
-    {
-      // as long as comming from the right or from the left and there is no right
-      while (current_->parent && (current_->parent->right == current_ || !current_->parent->right))
-        current_ = current_->parent;
-      if (current_->parent && current_->parent->right)
-        current_ = current_->parent->right;
-    }
-  }
-
-  // FIXME This should resemble increment in post-order
-  void decrement()
-  {
-    if (current_->parent)
-    {
-      if (current_->parent->left && current_->parent->left != current_)
-      {
-        current_ = tree_max(current_->parent->left);
-        if (current_->left) current_ = current_->left;
-      }
-      else
-        current_ = current_->parent;
-    }
-    else
-    {
-      current_ = tree_max(current_->left);
-      if (current_->left) current_ = current_->left;
-    }
-  }
-
-  reference deref() const
-  {
-    return current_->value;
-  }
-
-  state_type state() const
-  {
-    return current_;
-  }
-
-private:
-  state_type current_ = nullptr;
-};
-
-template<typename ValueType, typename NodePtrType>
-class tree_iterator<tree_traversal::postorder, ValueType, NodePtrType>
-{
-public:
-  typedef std::bidirectional_iterator_tag iterator_category;
-  typedef ValueType value_type;
-  typedef value_type& reference;
-  typedef value_type* pointer;
-  typedef NodePtrType state_type;
-  typedef ptrdiff_t difference_type; // templetise?
-
-  tree_iterator() = default;
-
-  explicit tree_iterator(state_type n) : current_{n} {}
-
-  state_type foo(state_type n)
-  {
-    while (n->left || n->right)
-      n = (n->left ? n->left : n->right);
-    return n;
-  }
-
-  void increment()
-  {
-    if (current_->parent->right && current_->parent->right != current_)
-      current_ = foo(current_->parent->right);
-    else
-      current_ = current_->parent;
-  }
-
-  void decrement()
-  {
-    if (current_->right)
-    {
-      current_ = current_->right;
-    }
-    else if (current_->left)
-    {
-      current_ = current_->left;
-    }
-    else
-    {
-      // as long as comming from the left or from the right and there is no left
-      while (current_->parent && (current_->parent->left == current_ || !current_->parent->left))
-        current_ = current_->parent;
-      if (current_->parent && current_->parent->left)
-        current_ = current_->parent->left;
-    }
-  }
-
-  reference deref() const
-  {
-    return current_->value;
-  }
-
-  state_type state() const
-  {
-    return current_;
-  }
-
-private:
-  state_type current_ = nullptr;
-};
 
 template<typename KeyType,
          typename MappedType,
@@ -256,16 +45,20 @@ private:
 public:
   bst()
   {
-    head_ = node_traits::allocate(allocator_, 1);
-    node_traits::construct(allocator_, std::addressof(head_));
+    head_ = create_node();
   }
+
+  bst(const bst&) = delete; // FIXME Implement me!
+  bst(bst&&) = delete; // FIXME Implement me!
 
   ~bst()
   {
     remove_tree(root_);
-    node_traits::destroy(allocator_, std::addressof(head_));
-    node_traits::deallocate(allocator_, head_, 1);
+    destroy_node(head_);
   }
+
+  bst& operator=(const bst&) = delete; // FIXME Implement me!
+  bst& operator=(bst&&) = delete; // FIXME Implement me!
 
   // FIXME
   //  - utilise r-value references
@@ -283,16 +76,14 @@ public:
     return std::make_pair(iterator<tree_traversal::inorder>{titerator<tree_traversal::inorder>{current}}, false);
   }
   
-  // Uses Hibbard deletion algorithm (which may result in
-  // unbalanced tree).
+  // Uses Hibbard deletion algorithm (which may result in unbalanced tree).
   void erase(const key_type& key)
   {
     node* current = find_by_key(key);
     if (!current) return;
     detach_node(current);
     --size_;
-    node_traits::destroy(allocator_, std::addressof(current));
-    node_traits::deallocate(allocator_, current, 1);
+    destroy_node(current);
   }
 
   value_type& operator[](const key_type& key)
@@ -315,9 +106,7 @@ public:
 
   iterator<tree_traversal::inorder> begin()
   {
-    constexpr auto t = tree_traversal::inorder;
-    // this is optimalization, trully decoupled iterator should get root node
-    return iterator<t>{titerator<t>{leftmost_}};
+    return begin<tree_traversal::inorder>();
   }
 
   template<tree_traversal t>
@@ -378,13 +167,12 @@ private:
     if (!n) return;
     remove_tree(n->left);
     remove_tree(n->right);
-    delete n;
+    destroy_node(n);
   }
 
   node* insert_node(const value_type& value, node* parent)
   {
-    node* current = node_traits::allocate(allocator_, 1);
-    node_traits::construct(allocator_, std::addressof(current), value);
+    node* current = create_node(value);
     attach_node(current, parent);
     ++size_;
     return current;
@@ -419,6 +207,7 @@ private:
       detach_two_children(current);
   }
 
+  // Removes the node.
   void detach_leaf(node* n)
   {
     assert(n);
@@ -435,6 +224,7 @@ private:
     }
   }
 
+  // Replaces removed node with its child.
   void detach_one_child(node* n)
   {
     assert(n);
@@ -444,6 +234,8 @@ private:
 
   void detach_two_children(node* n)
   {
+    assert(n);
+
     // substitute with the max key from the left branch
     node* replacement = tree_max(n->left);
     node* replacement_parent = replacement->parent;
@@ -487,6 +279,25 @@ private:
       current = get_link(current, key);
     }
     return std::make_pair(current, parent);
+  }
+
+  node_allocator& get_allocator()
+  {
+    return allocator_;
+  }
+
+  template<typename ...Args>
+  node* create_node(Args&&... args)
+  {
+    node* result = node_traits::allocate(get_allocator(), 1);
+    node_traits::construct(get_allocator(), result, std::forward<Args>(args)...);
+    return result;
+  }
+
+  void destroy_node(node* n)
+  {
+    node_traits::destroy(get_allocator(), n);
+    node_traits::deallocate(get_allocator(), n, 1);
   }
 
   node* head_ = nullptr;
