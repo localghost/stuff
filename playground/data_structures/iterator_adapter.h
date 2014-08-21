@@ -19,6 +19,7 @@ public:
   typedef typename std::iterator_traits<I>::reference reference;
   typedef typename std::iterator_traits<I>::pointer pointer;
   typedef typename std::iterator_traits<I>::iterator_category iterator_category;
+  typedef typename std::iterator_traits<I>::difference_type difference_type;
 
   iterator_adapter() = default;
   explicit iterator_adapter(I adapted) : adaptee_{std::move(adapted)} {}
