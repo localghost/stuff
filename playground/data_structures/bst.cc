@@ -10,18 +10,6 @@
 #define InputIterator typename
 #define OutputIterator typename
 
-// ValueType(OutputIterator) == T
-template<IntType T, OutputIterator O>
-O random_sequence(T from, T to, unsigned how_many, O output)
-{
-  std::random_device rd;
-  std::mt19937 gen{rd()};
-  std::uniform_int_distribution<T> dist{from, to};
-  for (unsigned i = 0; i < how_many; ++i)
-    *output++ = dist(gen);
-  return output;
-}
-
 std::chrono::nanoseconds time_it(std::function<void()> f)
 {
   auto start = std::chrono::high_resolution_clock::now();
@@ -30,80 +18,51 @@ std::chrono::nanoseconds time_it(std::function<void()> f)
   return std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
 }
 
+template<tree_traversal t, typename BST>
+void print(BST& tree)
+{
+  for (auto it = tree.template begin<t>(); it != tree.template end<t>(); ++it)
+    std::cout << it->first << " ";
+  std::cout << std::endl;
+}
+
+template<tree_traversal t, typename BST>
+void print_reverse(BST& tree)
+{
+  std::reverse_iterator<decltype(tree.template begin<t>())> rbegin{tree.template end<t>()};
+  std::reverse_iterator<decltype(tree.template begin<t>())> rend{tree.template begin<t>()};
+  for (; rbegin != rend; ++rbegin)
+    std::cout << rbegin->first << " ";
+  std::cout << std::endl;
+}
+
 int main()
 {
   std::vector<char> data{'F', 'G', 'I', 'H', 'B', 'A', 'D', 'E', 'C'};
-//  std::iota(data.begin(), data.end(), 0);
-//  std::random_shuffle(data.begin(), data.end());
-//  std::vector<int> data;
-//  random_sequence(std::numeric_limits<int>::min(),
-//                  std::numeric_limits<int>::max(),
-//                  10,
-//                  std::back_inserter(data));
+
   bst<char, char> tree;
   auto duration = time_it([&]
     {
       for (const int& i : data)
         tree.insert(std::make_pair(i, i));
     });
-  for (auto& val : tree)
-    std::cout << val.first << std::endl;
-  for (auto it = --tree.end(); it != tree.begin(); --it)
-    std::cout << it->first << std::endl;
 
-//  auto it = ++++++tree.begin();
-//  std::cout << "--: " << (--it)->first << std::endl;
-//  for (auto it = --(tree.end()); it != tree.begin(); --it)
-//    std::cout << it->first << std::endl;
-//  std::cout << "bst: " << duration.count() << std::endl;
-//  tree.erase(6);
-//  tree.erase(5);
-//  tree.erase(3);
-//  tree.erase(7);
-//  tree.erase(2);
-//  tree.erase(1);
-//  tree.erase(8);
-//  tree.erase(4);
-//  tree.erase(0);
-//  tree.erase(9);
-//
-//  for (auto& val : tree)
-//    std::cout << val.first << std::endl;
-//  tree.print();
-
-
-//  random_sequence(std::numeric_limits<int>::min(),
-//                  std::numeric_limits<int>::max(),
-//                  100,
-//                  std::back_inserter(data));
-//
-//  for (const int& i : data)
-//    tree.insert(std::make_pair(i, i));
-////  tree.print();
-//  for (auto& val : tree)
-//    std::cout << val.first << std::endl;
-//  bst<int, int> tree2;
-//  tree2.insert(std::make_pair(2, 2));
-//  tree2.insert(std::make_pair(1, 1));
-//  tree2.insert(std::make_pair(3, 3));
-  std::cout << "\nPREORDER\n" << std::endl;
+  std::cout << "INORDER" << std::endl;
   std::cout << "increment" << std::endl;
-  for (auto it = tree.begin<tree_traversal::preorder>(); it != tree.end<tree_traversal::preorder>(); ++it)
-    std::cout << it->first << std::endl;
+  print<tree_traversal::inorder>(tree);
   std::cout << "decrement" << std::endl;
-  for (auto it = --tree.end<tree_traversal::preorder>(); it != tree.begin<tree_traversal::preorder>(); --it)
-    std::cout << it->first << std::endl;
+  print_reverse<tree_traversal::inorder>(tree);
 
-//  auto res = tree.insert(std::make_pair('Z', 'Z'));
-//  std::cout << "inserted: " << res.second << ", it: " << res.first->first << std::endl;
-//  for (auto& val : tree)
-//    std::cout << val.first << std::endl;
-
-  std::cout << "\nPOSTORDER\n" << std::endl;
+  std::cout << "\nPREORDER" << std::endl;
   std::cout << "increment" << std::endl;
-  for (auto it = tree.begin<tree_traversal::postorder>(); it != tree.end<tree_traversal::postorder>(); ++it)
-    std::cout << it->first << std::endl;
+  print<tree_traversal::preorder>(tree);
   std::cout << "decrement" << std::endl;
-  for (auto it = --tree.end<tree_traversal::postorder>(); it != tree.begin<tree_traversal::postorder>(); --it)
-    std::cout << it->first << std::endl;
+  print_reverse<tree_traversal::preorder>(tree);
+
+
+  std::cout << "\nPOSTORDER" << std::endl;
+  std::cout << "increment" << std::endl;
+  print<tree_traversal::postorder>(tree);
+  std::cout << "decrement" << std::endl;
+  print_reverse<tree_traversal::postorder>(tree);
 }
