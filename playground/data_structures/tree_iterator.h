@@ -2,6 +2,7 @@
 #define TREE_ITERATOR_
 
 #include <cstddef>
+#include <iterator>
 
 #include "tree_utils.h"
 
@@ -10,15 +11,11 @@ enum struct tree_traversal { preorder, inorder, postorder };
 template<tree_traversal, typename ValueType, typename NodePtrType> class tree_iterator;
 
 template<typename ValueType, typename NodePtrType>
-class tree_iterator<tree_traversal::inorder, ValueType, NodePtrType>
+class tree_iterator<tree_traversal::inorder, ValueType, NodePtrType> : public std::iterator<std::bidirectional_iterator_tag, ValueType>
 {
 public:
-  typedef std::bidirectional_iterator_tag iterator_category;
-  typedef ValueType value_type;
-  typedef value_type& reference;
-  typedef value_type* pointer;
-  typedef NodePtrType state_type;
-  typedef std::ptrdiff_t difference_type; // templetise?
+  using typename std::iterator<std::bidirectional_iterator_tag, ValueType>::reference;
+  using state_type = NodePtrType;
 
   tree_iterator() = default;
 
@@ -67,15 +64,11 @@ private:
 };
 
 template<typename ValueType, typename NodePtrType>
-class tree_iterator<tree_traversal::preorder, ValueType, NodePtrType>
+class tree_iterator<tree_traversal::preorder, ValueType, NodePtrType> : public std::iterator<std::bidirectional_iterator_tag, ValueType>
 {
 public:
-  typedef std::bidirectional_iterator_tag iterator_category;
-  typedef ValueType value_type;
-  typedef value_type& reference;
-  typedef value_type* pointer;
-  typedef NodePtrType state_type;
-  typedef ptrdiff_t difference_type; // templetise?
+  using typename std::iterator<std::bidirectional_iterator_tag, ValueType>::reference;
+  using state_type = NodePtrType;
 
   tree_iterator() = default;
 
@@ -136,15 +129,11 @@ private:
 };
 
 template<typename ValueType, typename NodePtrType>
-class tree_iterator<tree_traversal::postorder, ValueType, NodePtrType>
+class tree_iterator<tree_traversal::postorder, ValueType, NodePtrType> : public std::iterator<std::bidirectional_iterator_tag, ValueType>
 {
 public:
-  typedef std::bidirectional_iterator_tag iterator_category;
-  typedef ValueType value_type;
-  typedef value_type& reference;
-  typedef value_type* pointer;
-  typedef NodePtrType state_type;
-  typedef ptrdiff_t difference_type; // templetise?
+  using typename std::iterator<std::bidirectional_iterator_tag, ValueType>::reference;
+  using state_type = NodePtrType;
 
   tree_iterator() = default;
 
