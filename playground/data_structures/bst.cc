@@ -5,6 +5,8 @@
 #include <vector>
 #include <chrono>
 #include <functional>
+#include <iostream>
+#include <map>
 
 #define IntType typename
 #define InputIterator typename
@@ -40,6 +42,21 @@ int main()
 {
   std::vector<char> data{'F', 'G', 'I', 'H', 'B', 'A', 'D', 'E', 'C'};
 
+  std::map<char, char, std::greater<char>> m;
+  for (const int& i : data)
+    m.insert(std::make_pair(i, i));
+  std::cout << "MAP GREATER" << std::endl;
+  for (const auto& i : m)
+    std::cout << i.first << " ";
+  std::cout << std::endl;
+
+  std::cout << "\nMAP GREATER - ERASE ROOT" << std::endl;
+  m.erase('F');
+  for (const auto& i : m)
+    std::cout << i.first << " ";
+  std::cout << std::endl;
+
+  std::cout << "\nTREE" << std::endl;
   bst<char, char> tree;
   auto duration = time_it([&]
     {
@@ -65,4 +82,35 @@ int main()
   print<tree_traversal::postorder>(tree);
   std::cout << "decrement" << std::endl;
   print_reverse<tree_traversal::postorder>(tree);
+
+  std::cout << "\nTREE ERASE ROOT" << std::endl;
+  tree.erase('F');
+
+  std::cout << "INORDER" << std::endl;
+  std::cout << "increment" << std::endl;
+  print<tree_traversal::inorder>(tree);
+  std::cout << "decrement" << std::endl;
+  print_reverse<tree_traversal::inorder>(tree);
+
+  std::cout << "\nTREE GREATER" << std::endl;
+
+  bst<char, char, std::greater<char>> tree2;
+  for (const int& i : data)
+    tree2.insert(std::make_pair(i, i));
+
+  std::cout << "INORDER" << std::endl;
+  std::cout << "increment" << std::endl;
+  print<tree_traversal::inorder>(tree2);
+  std::cout << "decrement" << std::endl;
+  print_reverse<tree_traversal::inorder>(tree2);
+
+  std::cout << "\nTREE GREATER - ERASE ROOT" << std::endl;
+
+  tree2.erase('F');
+
+  std::cout << "INORDER" << std::endl;
+  std::cout << "increment" << std::endl;
+  print<tree_traversal::inorder>(tree2);
+  std::cout << "decrement" << std::endl;
+  print_reverse<tree_traversal::inorder>(tree2);
 }
