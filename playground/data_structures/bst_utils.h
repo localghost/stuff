@@ -1,8 +1,8 @@
-#ifndef TREE_UTILS_
-#define TREE_UTILS_
+#ifndef BST_UTILS_
+#define BST_UTILS_
 
 template<typename NodePtrType>
-NodePtrType tree_min(NodePtrType n)
+NodePtrType bst_min(NodePtrType n)
 {
   assert(n);
   while (n->left)
@@ -11,7 +11,7 @@ NodePtrType tree_min(NodePtrType n)
 }
 
 template<typename NodePtrType>
-NodePtrType tree_max(NodePtrType n)
+NodePtrType bst_max(NodePtrType n)
 {
   assert(n);
   while (n->right)

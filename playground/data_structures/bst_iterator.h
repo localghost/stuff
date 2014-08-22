@@ -1,31 +1,31 @@
-#ifndef TREE_ITERATOR_
-#define TREE_ITERATOR_
+#ifndef BST_ITERATOR_
+#define BST_ITERATOR_
 
 #include <cstddef>
 #include <iterator>
 
-#include "tree_utils.h"
+#include "bst_utils.h"
 
-enum struct tree_traversal { preorder, inorder, postorder };
+enum struct bst_traversal { preorder, inorder, postorder };
 
-template<tree_traversal, typename ValueType, typename NodePtrType> class tree_iterator;
+template<bst_traversal, typename ValueType, typename NodePtrType> class bst_iterator;
 
 template<typename ValueType, typename NodePtrType>
-class tree_iterator<tree_traversal::inorder, ValueType, NodePtrType> : public std::iterator<std::bidirectional_iterator_tag, ValueType>
+class bst_iterator<bst_traversal::inorder, ValueType, NodePtrType> : public std::iterator<std::bidirectional_iterator_tag, ValueType>
 {
 public:
   using typename std::iterator<std::bidirectional_iterator_tag, ValueType>::reference;
   using state_type = NodePtrType;
 
-  tree_iterator() = default;
+  bst_iterator() = default;
 
-  explicit tree_iterator(state_type n) : current_{n} {}
+  explicit bst_iterator(state_type n) : current_{n} {}
 
   void increment()
   {
     if (current_->right)
     {
-      current_ = tree_min(current_->right);
+      current_ = bst_min(current_->right);
     }
     else
     {
@@ -39,7 +39,7 @@ public:
   {
     if (current_->left)
     {
-      current_ = tree_max(current_->left);
+      current_ = bst_max(current_->left);
     }
     else
     {
@@ -64,15 +64,15 @@ private:
 };
 
 template<typename ValueType, typename NodePtrType>
-class tree_iterator<tree_traversal::preorder, ValueType, NodePtrType> : public std::iterator<std::bidirectional_iterator_tag, ValueType>
+class bst_iterator<bst_traversal::preorder, ValueType, NodePtrType> : public std::iterator<std::bidirectional_iterator_tag, ValueType>
 {
 public:
   using typename std::iterator<std::bidirectional_iterator_tag, ValueType>::reference;
   using state_type = NodePtrType;
 
-  tree_iterator() = default;
+  bst_iterator() = default;
 
-  explicit tree_iterator(state_type n) : current_{n} {}
+  explicit bst_iterator(state_type n) : current_{n} {}
 
   void increment()
   {
@@ -101,7 +101,7 @@ public:
     {
       if (current_->parent->left && current_->parent->left != current_)
       {
-        current_ = tree_max(current_->parent->left);
+        current_ = bst_max(current_->parent->left);
         if (current_->left) current_ = current_->left;
       }
       else
@@ -109,7 +109,7 @@ public:
     }
     else
     {
-      current_ = tree_max(current_->left);
+      current_ = bst_max(current_->left);
       if (current_->left) current_ = current_->left;
     }
   }
@@ -129,15 +129,15 @@ private:
 };
 
 template<typename ValueType, typename NodePtrType>
-class tree_iterator<tree_traversal::postorder, ValueType, NodePtrType> : public std::iterator<std::bidirectional_iterator_tag, ValueType>
+class bst_iterator<bst_traversal::postorder, ValueType, NodePtrType> : public std::iterator<std::bidirectional_iterator_tag, ValueType>
 {
 public:
   using typename std::iterator<std::bidirectional_iterator_tag, ValueType>::reference;
   using state_type = NodePtrType;
 
-  tree_iterator() = default;
+  bst_iterator() = default;
 
-  explicit tree_iterator(state_type n) : current_{n} {}
+  explicit bst_iterator(state_type n) : current_{n} {}
 
   state_type foo(state_type n)
   {

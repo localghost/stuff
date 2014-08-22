@@ -20,7 +20,7 @@ std::chrono::nanoseconds time_it(std::function<void()> f)
   return std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
 }
 
-template<tree_traversal t, typename BST>
+template<bst_traversal t, typename BST>
 void print(BST& tree)
 {
   for (auto it = tree.template begin<t>(); it != tree.template end<t>(); ++it)
@@ -28,7 +28,7 @@ void print(BST& tree)
   std::cout << std::endl;
 }
 
-template<tree_traversal t, typename BST>
+template<bst_traversal t, typename BST>
 void print_reverse(BST& tree)
 {
   std::reverse_iterator<decltype(tree.template begin<t>())> rbegin{tree.template end<t>()};
@@ -66,31 +66,31 @@ int main()
 
   std::cout << "INORDER" << std::endl;
   std::cout << "increment" << std::endl;
-  print<tree_traversal::inorder>(tree);
+  print<bst_traversal::inorder>(tree);
   std::cout << "decrement" << std::endl;
-  print_reverse<tree_traversal::inorder>(tree);
+  print_reverse<bst_traversal::inorder>(tree);
 
   std::cout << "\nPREORDER" << std::endl;
   std::cout << "increment" << std::endl;
-  print<tree_traversal::preorder>(tree);
+  print<bst_traversal::preorder>(tree);
   std::cout << "decrement" << std::endl;
-  print_reverse<tree_traversal::preorder>(tree);
+  print_reverse<bst_traversal::preorder>(tree);
 
 
   std::cout << "\nPOSTORDER" << std::endl;
   std::cout << "increment" << std::endl;
-  print<tree_traversal::postorder>(tree);
+  print<bst_traversal::postorder>(tree);
   std::cout << "decrement" << std::endl;
-  print_reverse<tree_traversal::postorder>(tree);
+  print_reverse<bst_traversal::postorder>(tree);
 
   std::cout << "\nTREE ERASE ROOT" << std::endl;
   tree.erase('F');
 
   std::cout << "INORDER" << std::endl;
   std::cout << "increment" << std::endl;
-  print<tree_traversal::inorder>(tree);
+  print<bst_traversal::inorder>(tree);
   std::cout << "decrement" << std::endl;
-  print_reverse<tree_traversal::inorder>(tree);
+  print_reverse<bst_traversal::inorder>(tree);
 
   std::cout << "\nTREE GREATER" << std::endl;
 
@@ -100,9 +100,9 @@ int main()
 
   std::cout << "INORDER" << std::endl;
   std::cout << "increment" << std::endl;
-  print<tree_traversal::inorder>(tree2);
+  print<bst_traversal::inorder>(tree2);
   std::cout << "decrement" << std::endl;
-  print_reverse<tree_traversal::inorder>(tree2);
+  print_reverse<bst_traversal::inorder>(tree2);
 
   std::cout << "\nTREE GREATER - ERASE ROOT" << std::endl;
 
@@ -110,7 +110,7 @@ int main()
 
   std::cout << "INORDER" << std::endl;
   std::cout << "increment" << std::endl;
-  print<tree_traversal::inorder>(tree2);
+  print<bst_traversal::inorder>(tree2);
   std::cout << "decrement" << std::endl;
-  print_reverse<tree_traversal::inorder>(tree2);
+  print_reverse<bst_traversal::inorder>(tree2);
 }

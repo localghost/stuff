@@ -7,8 +7,8 @@
 #include <utility>
 #include <memory>
 
-#include "tree_utils.h"
-#include "tree_iterator.h"
+#include "bst_utils.h"
+#include "bst_iterator.h"
 #include "iterator_adapter.h"
 
 template<typename KeyType,
@@ -30,10 +30,10 @@ public:
 private:
   struct node;
 
-  template<tree_traversal t>
-  using titerator = tree_iterator<t, value_type, node*>;
+  template<bst_traversal t>
+  using titerator = bst_iterator<t, value_type, node*>;
 
-  template<tree_traversal t>
+  template<bst_traversal t>
   using iterator = iterator_adapter<titerator<t>>;
 
   using node_allocator = typename std::allocator_traits<allocator_type>::template rebind_alloc<node>;
@@ -58,7 +58,7 @@ public:
   bst& operator=(bst&&) = delete; // FIXME Implement me!
 
   // FIXME utilise r-value references
-  std::pair<iterator<tree_traversal::inorder>, bool>
+  std::pair<iterator<bst_traversal::inorder>, bool>
   insert(const value_type& value)
   {
     node* current = nullptr;
@@ -67,9 +67,9 @@ public:
     if (!current)
     {
       current = insert_node(value, parent);
-      return std::make_pair(iterator<tree_traversal::inorder>{titerator<tree_traversal::inorder>{current}}, true);
+      return std::make_pair(iterator<bst_traversal::inorder>{titerator<bst_traversal::inorder>{current}}, true);
     }
-    return std::make_pair(iterator<tree_traversal::inorder>{titerator<tree_traversal::inorder>{current}}, false);
+    return std::make_pair(iterator<bst_traversal::inorder>{titerator<bst_traversal::inorder>{current}}, false);
   }
   
   // Uses Hibbard deletion algorithm (which may result in unbalanced tree).
@@ -93,28 +93,28 @@ public:
     return current->value;
   }
 
-  template<tree_traversal t>
+  template<bst_traversal t>
   iterator<t> begin()
   {
-    if (tree_traversal::preorder == t)
+    if (bst_traversal::preorder == t)
       return iterator<t>{titerator<t>{root_}};
     return iterator<t>{titerator<t>{leftmost_}};
   }
 
-  iterator<tree_traversal::inorder> begin()
+  iterator<bst_traversal::inorder> begin()
   {
-    return begin<tree_traversal::inorder>();
+    return begin<bst_traversal::inorder>();
   }
 
-  template<tree_traversal t>
+  template<bst_traversal t>
   iterator<t> end()
   {
     return iterator<t>{titerator<t>{head_}};
   }
 
-  iterator<tree_traversal::inorder> end()
+  iterator<bst_traversal::inorder> end()
   {
-    return end<tree_traversal::inorder>();
+    return end<bst_traversal::inorder>();
   }
 
   size_type size() const
@@ -234,7 +234,7 @@ private:
     assert(n);
 
     // substitute with the max key from the left branch
-    node* replacement = tree_max(n->left);
+    node* replacement = bst_max(n->left);
     node* replacement_parent = replacement->parent;
 
     // if replacement had a left child then attach it as parents

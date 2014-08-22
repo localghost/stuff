@@ -6,7 +6,7 @@
 // I is at most BidirectionalIterator
 //
 // Adapted iterator should provide at least following methods:
-// deref() : should return reference to the iterator's value
+// deref() : should return reference to the iterator's value object
 // increment() : should move the iterator one step forward
 // decrement() : should move the iterator one step backwards
 // state() : should return iterator's internal state by which two
