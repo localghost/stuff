@@ -299,7 +299,8 @@ private:
 
   node* head_ = nullptr;
   node* root_ = nullptr;
-  node* leftmost_ = nullptr; // for constant time of begin() (inorder/postorder)
+  // for constant time begin() (for inorder and postorder)
+  node* leftmost_ = nullptr;
   size_type size_ = 0;
   node_allocator allocator_;
 };
