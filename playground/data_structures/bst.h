@@ -1,7 +1,6 @@
 #ifndef BST_
 #define BST_
 
-#include <iostream> // for LOG
 #include <cassert>
 #include <tuple>
 #include <cstddef>
@@ -11,8 +10,6 @@
 #include "tree_utils.h"
 #include "tree_iterator.h"
 #include "iterator_adapter.h"
-
-#define LOG(msg) do { std::cout << msg << std::endl; } while (false)
 
 template<typename KeyType,
          typename MappedType,
@@ -60,8 +57,7 @@ public:
   bst& operator=(const bst&) = delete; // FIXME Implement me!
   bst& operator=(bst&&) = delete; // FIXME Implement me!
 
-  // FIXME
-  //  - utilise r-value references
+  // FIXME utilise r-value references
   std::pair<iterator<tree_traversal::inorder>, bool>
   insert(const value_type& value)
   {
@@ -77,6 +73,7 @@ public:
   }
   
   // Uses Hibbard deletion algorithm (which may result in unbalanced tree).
+  // see http://algs4.cs.princeton.edu/32bst/
   void erase(const key_type& key)
   {
     node* current = find_by_key(key);
@@ -301,7 +298,7 @@ private:
 
   node* head_ = nullptr;
   node* root_ = nullptr;
-  node* leftmost_ = nullptr;
+  node* leftmost_ = nullptr; // for constant time of begin() (inorder/postorder)
   size_type size_ = 0;
   node_allocator allocator_;
 };
