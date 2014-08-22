@@ -150,7 +150,7 @@ private:
   node*& get_link(node* n, const key_type& key)
   {
     assert(n);
-    return (key < get_key(n) ? n->left : n->right);
+    return (key_compare{}(key, get_key(n)) ? n->left : n->right);
   }
 
   bool is_root(node* n) const
@@ -187,7 +187,8 @@ private:
     {
       root_ = current;
       head_->left = root_;
-      leftmost_ = current;
+      if (!leftmost_ || key_compare{}(get_key(current), get_key(leftmost_)))
+        leftmost_ = current;
     }
   }
 
