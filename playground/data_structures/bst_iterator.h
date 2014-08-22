@@ -3,10 +3,11 @@
 
 #include <cstddef>
 #include <iterator>
+#include <deque>
 
 #include "bst_utils.h"
 
-enum struct bst_traversal { preorder, inorder, postorder };
+enum struct bst_traversal { preorder, inorder, postorder, level };
 
 template<bst_traversal, typename ValueType, typename NodePtrType> class bst_iterator;
 
@@ -189,6 +190,43 @@ public:
 
 private:
   state_type current_ = nullptr;
+};
+
+template<typename ValueType, typename NodePtrType>
+class bst_iterator<bst_traversal::level, ValueType, NodePtrType>
+  : public std::iterator<std::forward_iterator_tag, ValueType>
+{
+public:
+  using typename std::iterator<std::forward_iterator_tag, ValueType>::reference;
+  using state_type = NodePtrType;
+
+  bst_iterator() = default;
+
+  explicit bst_iterator(state_type n)
+  {
+    if (n) nodes_.push_back(n);
+  }
+
+  void increment()
+  {
+    state_type current = nodes_.front();
+    if (current->left) nodes_.push_back(current->left);
+    if (current->right) nodes_.push_back(current->right);
+    nodes_.pop_front();
+  }
+
+  reference deref() const
+  {
+    return nodes_.front()->value;
+  }
+
+  const std::deque<state_type>& state() const
+  {
+    return nodes_;
+  }
+
+private:
+  std::deque<state_type> nodes_;
 };
 
 #endif

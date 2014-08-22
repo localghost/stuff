@@ -76,12 +76,15 @@ int main()
   std::cout << "decrement" << std::endl;
   print_reverse<bst_traversal::preorder>(tree);
 
-
   std::cout << "\nPOSTORDER" << std::endl;
   std::cout << "increment" << std::endl;
   print<bst_traversal::postorder>(tree);
   std::cout << "decrement" << std::endl;
   print_reverse<bst_traversal::postorder>(tree);
+
+  std::cout << "\nLEVEL" << std::endl;
+  std::cout << "increment" << std::endl;
+  print<bst_traversal::level>(tree);
 
   std::cout << "\nTREE ERASE ROOT" << std::endl;
   tree.erase('F');

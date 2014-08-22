@@ -96,7 +96,7 @@ public:
   template<bst_traversal t>
   iterator<t> begin()
   {
-    if (bst_traversal::preorder == t)
+    if (bst_traversal::preorder == t || bst_traversal::level == t)
       return iterator<t>{titerator<t>{root_}};
     return iterator<t>{titerator<t>{leftmost_}};
   }
@@ -109,6 +109,8 @@ public:
   template<bst_traversal t>
   iterator<t> end()
   {
+    if (bst_traversal::level == t)
+      return iterator<t>{titerator<t>{}};
     return iterator<t>{titerator<t>{head_}};
   }
 
