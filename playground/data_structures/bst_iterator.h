@@ -11,7 +11,8 @@ enum struct bst_traversal { preorder, inorder, postorder };
 template<bst_traversal, typename ValueType, typename NodePtrType> class bst_iterator;
 
 template<typename ValueType, typename NodePtrType>
-class bst_iterator<bst_traversal::inorder, ValueType, NodePtrType> : public std::iterator<std::bidirectional_iterator_tag, ValueType>
+class bst_iterator<bst_traversal::inorder, ValueType, NodePtrType>
+  : public std::iterator<std::bidirectional_iterator_tag, ValueType>
 {
 public:
   using typename std::iterator<std::bidirectional_iterator_tag, ValueType>::reference;
@@ -64,7 +65,8 @@ private:
 };
 
 template<typename ValueType, typename NodePtrType>
-class bst_iterator<bst_traversal::preorder, ValueType, NodePtrType> : public std::iterator<std::bidirectional_iterator_tag, ValueType>
+class bst_iterator<bst_traversal::preorder, ValueType, NodePtrType>
+  : public std::iterator<std::bidirectional_iterator_tag, ValueType>
 {
 public:
   using typename std::iterator<std::bidirectional_iterator_tag, ValueType>::reference;
@@ -129,7 +131,8 @@ private:
 };
 
 template<typename ValueType, typename NodePtrType>
-class bst_iterator<bst_traversal::postorder, ValueType, NodePtrType> : public std::iterator<std::bidirectional_iterator_tag, ValueType>
+class bst_iterator<bst_traversal::postorder, ValueType, NodePtrType>
+  : public std::iterator<std::bidirectional_iterator_tag, ValueType>
 {
 public:
   using typename std::iterator<std::bidirectional_iterator_tag, ValueType>::reference;
