@@ -16,37 +16,28 @@ void merge(I first, I mid, I last, Compare compare)
     {
       if (!compare(*left, *right))
       {
-        tmp.push_back(*right);
+        tmp.push_back(std::move(*right));
         ++right;
       }
       else
       {
-        tmp.push_back(*left);
+        tmp.push_back(std::move(*left));
         ++left;
       }
     }
     else if (left != mid)
     {
-      while (left != mid)
-      {
-        tmp.push_back(*left);
-        ++left;
-      }
+      std::move(left, mid, std::back_inserter(tmp));
+      left += std::distance(left, mid);
     }
     else if (right != last)
     {
-      while (right != last)
-      {
-        tmp.push_back(*right);
-        ++right;
-      }
+      std::move(right, last, std::back_inserter(tmp));
+      right += std::distance(right, last);
     }
   }
 
-  for (auto it = tmp.begin(); it != tmp.end() && first != last; ++it, ++first)
-  {
-    *first = *it;
-  }
+  std::move(tmp.begin(), tmp.end(), first);
 }
 
 template<typename I, typename Compare>
