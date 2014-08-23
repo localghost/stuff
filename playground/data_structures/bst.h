@@ -67,9 +67,9 @@ public:
     if (!current)
     {
       current = insert_node(value, parent);
-      return std::make_pair(iterator<bst_traversal::inorder>{titerator<bst_traversal::inorder>{current}}, true);
+      return std::make_pair(make_iterator<bst_traversal::inorder>(current), true);
     }
-    return std::make_pair(iterator<bst_traversal::inorder>{titerator<bst_traversal::inorder>{current}}, false);
+    return std::make_pair(make_iterator<bst_traversal::inorder>(current), false);
   }
   
   // Uses Hibbard deletion algorithm (which may result in unbalanced tree).
@@ -97,8 +97,8 @@ public:
   iterator<t> begin()
   {
     if (bst_traversal::preorder == t || bst_traversal::level == t)
-      return iterator<t>{titerator<t>{root_}};
-    return iterator<t>{titerator<t>{leftmost_}};
+      return make_iterator<t>(root_);
+    return make_iterator<t>(leftmost_);
   }
 
   iterator<bst_traversal::inorder> begin()
@@ -111,7 +111,7 @@ public:
   {
     if (bst_traversal::level == t)
       return iterator<t>{titerator<t>{}};
-    return iterator<t>{titerator<t>{head_}};
+    return make_iterator<t>(head_);
   }
 
   iterator<bst_traversal::inorder> end()
@@ -297,6 +297,12 @@ private:
   {
     node_traits::destroy(get_allocator(), n);
     node_traits::deallocate(get_allocator(), n, 1);
+  }
+
+  template<bst_traversal t>
+  iterator<t> make_iterator(node* n)
+  {
+    return iterator<t>{titerator<t>{n}};
   }
 
   node* head_ = nullptr;
