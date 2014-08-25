@@ -18,7 +18,7 @@
 template<BidirectionalIterator I, StrictWeakOrdering Compare>
 void quicksort3(I first, I last, Compare compare)
 {
-  using namespace std; // for ADL for swap()
+  using std::swap;
 
   if (first == last) return;
 
