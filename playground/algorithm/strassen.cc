@@ -3,6 +3,7 @@
 #include <initializer_list>
 #include <iostream>
 
+template<typename T>
 class matrix
 {
 public:
@@ -13,7 +14,7 @@ public:
     allocate();
   }
 
-  matrix(std::initializer_list<int> data, size_t size) : size_{size}
+  matrix(std::initializer_list<T> data, size_t size) : size_{size}
   {
     allocate();
     size_t i = 0;
@@ -52,12 +53,12 @@ public:
     return *this;
   }
 
-  int* operator[](size_t i)
+  T* operator[](size_t i)
   {
     return data_[i];
   }
 
-  const int* operator[](size_t i) const
+  const T* operator[](size_t i) const
   {
     return data_[i];
   }
@@ -67,9 +68,9 @@ public:
 private:
   void allocate()
   {
-    data_ = new int*[size_];
+    data_ = new T*[size_];
     for (size_t i = 0; i != size_; ++i)
-      data_[i] = new int[size_];
+      data_[i] = new T[size_];
   }
 
   void deallocate()
@@ -79,31 +80,34 @@ private:
     delete [] data_;
   }
 
-  int** data_ = nullptr;
+  T** data_ = nullptr;
   size_t size_ = 0;
 };
 
-matrix operator+(const matrix& a, const matrix& b)
+template<typename T>
+matrix<T> operator+(const matrix<T>& a, const matrix<T>& b)
 {
-  matrix result{a.size()};
+  matrix<T> result{a.size()};
   for (size_t i = 0; i != a.size(); ++i)
     for (size_t j = 0; j != a.size(); ++j)
       result[i][j] = a[i][j] + b[i][j];
   return result;
 }
 
-matrix operator-(const matrix& a, const matrix& b)
+template<typename T>
+matrix<T> operator-(const matrix<T>& a, const matrix<T>& b)
 {
-  matrix result{a.size()};
+  matrix<T> result{a.size()};
   for (size_t i = 0; i != result.size(); ++i)
     for (size_t j = 0; j != result.size(); ++j)
       result[i][j] = a[i][j] - b[i][j];
   return result;
 }
 
-matrix strassen(const matrix& a, const matrix& b)
+template<typename T>
+matrix<T> strassen(const matrix<T>& a, const matrix<T>& b)
 {
-  matrix c{a.size()};
+  matrix<T> c{a.size()};
 
   if (a.size() == 1)
   {
@@ -114,15 +118,15 @@ matrix strassen(const matrix& a, const matrix& b)
   {
     size_t size = a.size() / 2;
     
-    matrix a11{size};
-    matrix a12{size};
-    matrix a21{size};
-    matrix a22{size};
+    matrix<T> a11{size};
+    matrix<T> a12{size};
+    matrix<T> a21{size};
+    matrix<T> a22{size};
 
-    matrix b11{size};
-    matrix b12{size};
-    matrix b21{size};
-    matrix b22{size};
+    matrix<T> b11{size};
+    matrix<T> b12{size};
+    matrix<T> b21{size};
+    matrix<T> b22{size};
 
     for (size_t i = 0; i != size; ++i)
     {
@@ -140,18 +144,18 @@ matrix strassen(const matrix& a, const matrix& b)
       }
     }
 
-    matrix m1 = strassen(a11 + a22, b11 + b22);
-    matrix m2 = strassen(a21 + a22, b11);
-    matrix m3 = strassen(a11, b12 - b22);
-    matrix m4 = strassen(a22, b21 - b11);
-    matrix m5 = strassen(a11 + a12, b22);
-    matrix m6 = strassen(a21 - a11, b11 + b12);
-    matrix m7 = strassen(a12 - a22, b21 + b22);
+    matrix<T> m1 = strassen(a11 + a22, b11 + b22);
+    matrix<T> m2 = strassen(a21 + a22, b11);
+    matrix<T> m3 = strassen(a11, b12 - b22);
+    matrix<T> m4 = strassen(a22, b21 - b11);
+    matrix<T> m5 = strassen(a11 + a12, b22);
+    matrix<T> m6 = strassen(a21 - a11, b11 + b12);
+    matrix<T> m7 = strassen(a12 - a22, b21 + b22);
 
-    matrix c11{size};
-    matrix c12{size};
-    matrix c21{size};
-    matrix c22{size};
+    matrix<T> c11{size};
+    matrix<T> c12{size};
+    matrix<T> c21{size};
+    matrix<T> c22{size};
 
     c11 = m1 + m4 - m5 + m7;
     c12 = m3 + m5;
@@ -173,7 +177,8 @@ matrix strassen(const matrix& a, const matrix& b)
   }
 }
 
-void print_matrix(const matrix& m)
+template<typename T>
+void print_matrix(const matrix<T>& m)
 {
   for (size_t i = 0; i != m.size(); ++i)
   {
@@ -188,12 +193,18 @@ void print_matrix(const matrix& m)
 
 int main()
 {
-  matrix a{{1, 2, 2, 2}, 2};
+  matrix<int> a{{1, 2, 3, 4, 5, 6, 2, 9, 2, 8, 5, 3, 1, 4, 6, 7}, 4};
   print_matrix(a);
 
-  matrix b{{2, 2, 2, 2}, 2};
+  matrix<int> b{{9, 5, 8, 3, 6, 3, 90, 7, 1, 23, 4, 2, 7, 6, 3, 7}, 4};
   print_matrix(b);
 
-  matrix c = strassen(a, b);
+  matrix<int> c = strassen(a, b);
   print_matrix(c);
+
+  // should be:
+  //  52 104 212  51 
+  // 146 143 615 124
+  //  92 167 765  93 
+  //  88 197 413  92 
 }
