@@ -198,18 +198,18 @@ class bst_iterator<bst_traversal::level, ValueType, NodePtrType>
 {
 public:
   using typename std::iterator<std::forward_iterator_tag, ValueType>::reference;
-  using state_type = NodePtrType;
+  using state_type = std::deque<NodePtrType>;
 
   bst_iterator() = default;
 
-  explicit bst_iterator(state_type n)
+  explicit bst_iterator(typename state_type::value_type n)
   {
-    if (n) nodes_.push_back(n);
+    if (n) nodes_.push_back(std::move(n));
   }
 
   void increment()
   {
-    state_type current = nodes_.front();
+    const auto& current = nodes_.front();
     if (current->left) nodes_.push_back(current->left);
     if (current->right) nodes_.push_back(current->right);
     nodes_.pop_front();
@@ -220,13 +220,13 @@ public:
     return nodes_.front()->value;
   }
 
-  const std::deque<state_type>& state() const
+  const state_type& state() const
   {
     return nodes_;
   }
 
 private:
-  std::deque<state_type> nodes_;
+  state_type nodes_;
 };
 
 #endif
