@@ -43,6 +43,31 @@ void quicksort(I first, I last, Compare compare)
   quicksort(++partition, end, compare);
 }
 
+template<typename I, typename Compare>
+void quicksort_1(I first, I last, Compare compare)
+{
+  using std::swap;
+  if (first == last) return;
+
+  auto begin = first;
+  auto end = last;
+  auto pivot = *(first + (std::distance(first, last) / 2));
+
+  while (first != last)
+  {
+    while (first != last && compare(*first, pivot))
+      ++first;
+
+    while (first != last && compare(pivot, *--last));
+
+    if (first != last)
+      swap(*first, *last);
+  }
+
+  quicksort_1(begin, first, compare);
+  quicksort_1(++first, end, compare);
+}
+
 int main()
 {
   std::vector<int> data_base = {7, -72, 3, 6, 45, -72, 9, 0, -34, 2, 9};
@@ -54,6 +79,7 @@ int main()
   print_range(data.begin(), data.end());
 
   quicksort(data.begin(), data.end(), std::less<op_counter<int>>());
+//  quicksort_1(data.begin(), data.end(), std::less<op_counter<int>>());
   //    sort(data.begin(), data.end(), std::less<op_counter<int>>());
 
   std::cout << "output: ";
