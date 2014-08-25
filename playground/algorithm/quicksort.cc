@@ -68,22 +68,59 @@ void quicksort_1(I first, I last, Compare compare)
   quicksort_1(++first, end, compare);
 }
 
+template<typename I, typename Compare>
+void quicksort_2(I first, I last, Compare compare)
+{
+  using std::swap;
+  if (first == last) return;
+
+  auto begin = first;
+  auto end = last;
+  auto pivot = first++;
+  auto partition = pivot;
+
+  while (first != last)
+  {
+    if (compare(*first, *pivot))
+        swap(*first, *++partition);
+    ++first;
+  }
+
+  if (pivot != partition)
+    swap(*pivot, *partition);
+
+  quicksort_2(begin, partition, compare);
+  quicksort_2(++partition, end, compare);
+}
+
+struct tag_1 {};
+struct tag_2 {};
+
 int main()
 {
   std::vector<int> data_base = {7, -72, 3, 6, 45, -72, 9, 0, -34, 2, 9};
   std::vector<op_counter<int>> data;
+  std::vector<op_counter<int, tag_1>> data_1;
+  std::vector<op_counter<int, tag_2>> data_2;
   for (const auto& i : data_base)
+  {
     data.emplace_back(i);
+    data_1.emplace_back(i);
+    data_2.emplace_back(i);
+  }
 
   std::cout << "input: ";
   print_range(data.begin(), data.end());
 
   quicksort(data.begin(), data.end(), std::less<op_counter<int>>());
-//  quicksort_1(data.begin(), data.end(), std::less<op_counter<int>>());
+  quicksort_1(data_1.begin(), data_1.end(), std::less<op_counter<int, tag_1>>());
+  quicksort_2(data_2.begin(), data_2.end(), std::less<op_counter<int, tag_2>>());
   //    sort(data.begin(), data.end(), std::less<op_counter<int>>());
 
   std::cout << "output: ";
   print_range(data.begin(), data.end());
 
   print_results<int>();
+  print_results<int, tag_1>();
+  print_results<int, tag_2>();
 }
