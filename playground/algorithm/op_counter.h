@@ -128,7 +128,7 @@ private:
   unsigned marker_;
 };
 
-template<typename T, typename tag = T>
+template<typename T, typename tag>
 void print_results()
 {
   for (auto it = op_counter<T, tag>::counts.begin(); it != op_counter<T, tag>::counts.end(); ++it)
