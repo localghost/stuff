@@ -41,6 +41,8 @@ public:
 
   matrix& operator=(matrix&& other)
   {
+    deallocate();
+
     size_ = other.size_;
     data_ = other.data_;
 
