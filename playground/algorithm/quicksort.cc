@@ -55,8 +55,7 @@ void quicksort_1(I first, I last, Compare compare)
 
   while (first != last)
   {
-    while (first != last && compare(*first, pivot))
-      ++first;
+    while (compare(*first, pivot) && (++first != last));
 
     while (first != last && compare(pivot, *--last));
 
@@ -112,13 +111,13 @@ int main()
   std::cout << "input: ";
   print_range(data.begin(), data.end());
 
-  quicksort(data.begin(), data.end(), std::less<op_counter<int>>());
+//  quicksort(data.begin(), data.end(), std::less<op_counter<int>>());
   quicksort_1(data_1.begin(), data_1.end(), std::less<op_counter<int, tag_1>>());
-  quicksort_2(data_2.begin(), data_2.end(), std::less<op_counter<int, tag_2>>());
+//  quicksort_2(data_2.begin(), data_2.end(), std::less<op_counter<int, tag_2>>());
   //    sort(data.begin(), data.end(), std::less<op_counter<int>>());
 
   std::cout << "output: ";
-  print_range(data.begin(), data.end());
+  print_range(data_1.begin(), data_1.end());
 
   print_results<int>();
   print_results<int, tag_1>();
