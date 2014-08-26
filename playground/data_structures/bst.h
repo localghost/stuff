@@ -46,7 +46,20 @@ public:
   }
 
   bst(const bst&) = delete; // FIXME Implement me!
-  bst(bst&&) = delete; // FIXME Implement me!
+
+  bst(bst&& other)
+  {
+    head_ = other.head_;
+    root_ = other.root_;
+    leftmost_ = other.leftmost_;
+    size_ = other.size_;
+    allocator_ = std::move(other.allocator_);
+
+    other.head_ = nullptr;
+    other.root_ = nullptr;
+    other.leftmost_ = nullptr;
+    other.size_ = 0;
+  }
 
   ~bst()
   {
@@ -55,7 +68,17 @@ public:
   }
 
   bst& operator=(const bst&) = delete; // FIXME Implement me!
-  bst& operator=(bst&&) = delete; // FIXME Implement me!
+
+  bst& operator=(bst&& other)
+  {
+    remove_tree(root_);
+    destroy_node(head_);
+    head_ = nullptr;
+    root_ = nullptr;
+    leftmost_ = nullptr;
+    size_ = 0;
+    std::swap(*this, other);
+  }
 
   // FIXME utilise r-value references
   std::pair<iterator<bst_traversal::inorder>, bool>
