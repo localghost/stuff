@@ -26,14 +26,12 @@ void quicksort(I first, I last, Compare compare)
 
   auto pivot = first + (std::distance(first, last) / 2);
   swap(*pivot, *first);
-  pivot = first;
-  ++first;
+  pivot = first++;
 
   while (first != last)
   {
     while (!compare(*pivot, *first) && (++first != last));
-    if (first == last) break;
-    while ((first != --last) && compare(*pivot, *last));
+    while ((first != last) && compare(*pivot, *--last));
     swap(*first, *last);
   }
   auto partition = --first;
@@ -111,13 +109,19 @@ int main()
   std::cout << "input: ";
   print_range(data.begin(), data.end());
 
-//  quicksort(data.begin(), data.end(), std::less<op_counter<int>>());
+  quicksort(data.begin(), data.end(), std::less<op_counter<int>>());
   quicksort_1(data_1.begin(), data_1.end(), std::less<op_counter<int, tag_1>>());
-//  quicksort_2(data_2.begin(), data_2.end(), std::less<op_counter<int, tag_2>>());
+  quicksort_2(data_2.begin(), data_2.end(), std::less<op_counter<int, tag_2>>());
   //    sort(data.begin(), data.end(), std::less<op_counter<int>>());
 
   std::cout << "output: ";
-  print_range(data_1.begin(), data_1.end());
+  print_range(data.begin(), data.end());
+
+  std::cout << "output_1: ";
+  print_range(data.begin(), data.end());
+
+  std::cout << "output_2: ";
+  print_range(data.begin(), data.end());
 
   print_results<int>();
   print_results<int, tag_1>();
