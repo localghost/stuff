@@ -48,13 +48,12 @@ public:
   bst(const bst&) = delete; // FIXME Implement me!
 
   bst(bst&& other)
+    : head_{other.head_},
+      root_{other.root_},
+      leftmost_{other.leftmost_},
+      size_{other.size_},
+      allocator_{other.allocator_}
   {
-    head_ = other.head_;
-    root_ = other.root_;
-    leftmost_ = other.leftmost_;
-    size_ = other.size_;
-    allocator_ = std::move(other.allocator_);
-
     other.head_ = nullptr;
     other.root_ = nullptr;
     other.leftmost_ = nullptr;
@@ -63,16 +62,14 @@ public:
 
   ~bst()
   {
-    remove_tree(root_);
-    destroy_node(head_);
+    destroy_tree();
   }
 
   bst& operator=(const bst&) = delete; // FIXME Implement me!
 
   bst& operator=(bst&& other)
   {
-    remove_tree(root_);
-    destroy_node(head_);
+    destroy_tree();
     head_ = nullptr;
     root_ = nullptr;
     leftmost_ = nullptr;
@@ -181,6 +178,12 @@ private:
   bool is_root(node* n) const
   {
     return n == root_;
+  }
+
+  void destroy_tree()
+  {
+    remove_tree(root_);
+    if (head_) destroy_node(head_);
   }
 
   void remove_tree(node* n)
