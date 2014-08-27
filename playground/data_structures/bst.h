@@ -183,8 +183,7 @@ private:
 
   void destroy_tree()
   {
-    if (root_) remove_tree(root_);
-    if (head_) destroy_node(head_);
+    if (head_) remove_tree(head_);
   }
 
   void remove_tree(node* n)
