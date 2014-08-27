@@ -116,4 +116,27 @@ int main()
   print<bst_traversal::inorder>(tree2);
   std::cout << "decrement" << std::endl;
   print_reverse<bst_traversal::inorder>(tree2);
+
+
+  std::cout << "\nTREE COPY - COPY CTOR" << std::endl;
+
+  auto tree_copy = tree;
+
+  std::cout << "INORDER" << std::endl;
+  std::cout << "increment" << std::endl;
+  print<bst_traversal::inorder>(tree_copy);
+  std::cout << "decrement" << std::endl;
+  print_reverse<bst_traversal::inorder>(tree_copy);
+
+
+  std::cout << "\nTREE COPY - COPY ASSIGN" << std::endl;
+
+  decltype(tree) tree_copy2;
+  tree_copy2 = tree;
+
+  std::cout << "INORDER" << std::endl;
+  std::cout << "increment" << std::endl;
+  print<bst_traversal::inorder>(tree_copy2);
+  std::cout << "decrement" << std::endl;
+  print_reverse<bst_traversal::inorder>(tree_copy2);
 }

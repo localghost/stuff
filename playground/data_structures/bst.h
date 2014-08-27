@@ -46,7 +46,14 @@ public:
     head_ = create_node();
   }
 
-  bst(const bst&) = delete; // FIXME Implement me!
+  bst(const bst& other)
+  {
+    head_ = create_node();
+    head_->left = clone_tree(other.root_, head_);
+    root_ = head_->left;
+    leftmost_ = bst_min(root_);
+    size_ = other.size_;
+  }
 
   bst(bst&& other)
     : head_{other.head_},
@@ -63,14 +70,21 @@ public:
 
   ~bst()
   {
-    destroy_tree();
+    if (head_) remove_tree(head_);
   }
 
-  bst& operator=(const bst&) = delete; // FIXME Implement me!
+  bst& operator=(const bst& other)
+  {
+    if (root_) remove_tree(root_);
+    head_->left = clone_tree(other.root_, head_);
+    root_ = head_->left;
+    leftmost_ = bst_min(root_);
+    size_ = other.size_;
+  }
 
   bst& operator=(bst&& other)
   {
-    destroy_tree();
+    if (head_) remove_tree(head_);
     head_ = nullptr;
     root_ = nullptr;
     leftmost_ = nullptr;
@@ -181,13 +195,19 @@ private:
     return n == root_;
   }
 
-  void destroy_tree()
+  node* clone_tree(node* n, node* p)
   {
-    if (head_) remove_tree(head_);
+    node* result = create_node(n->value);
+    result->parent = p;
+    if (n->left) result->left = clone_tree(n->left, result);
+    if (n->right) result->right = clone_tree(n->right, result);
+    return result;
   }
 
+  // precondition: c != nullptr
   void remove_tree(node* n)
   {
+    assert(n);
     if (n->left) remove_tree(n->left);
     if (n->right) remove_tree(n->right);
     destroy_node(n);
