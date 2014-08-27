@@ -109,13 +109,14 @@ public:
   
   // Uses Hibbard deletion algorithm (which may result in unbalanced tree).
   // see http://algs4.cs.princeton.edu/32bst/
-  void erase(const key_type& key)
+  size_type erase(const key_type& key)
   {
     node* current = find_by_key(key);
-    if (!current) return;
+    if (!current) return 0;
     detach_node(current);
     --size_;
     destroy_node(current);
+    return 1;
   }
 
   value_type& operator[](const key_type& key)
