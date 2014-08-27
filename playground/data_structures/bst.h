@@ -37,6 +37,7 @@ private:
   using iterator = iterator_adapter<titerator<t>>;
 
   using node_allocator = typename std::allocator_traits<allocator_type>::template rebind_alloc<node>;
+
   using node_traits = std::allocator_traits<node_allocator>;
 
 public:
@@ -182,15 +183,14 @@ private:
 
   void destroy_tree()
   {
-    remove_tree(root_);
+    if (root_) remove_tree(root_);
     if (head_) destroy_node(head_);
   }
 
   void remove_tree(node* n)
   {
-    if (!n) return;
-    remove_tree(n->left);
-    remove_tree(n->right);
+    if (n->left) remove_tree(n->left);
+    if (n->right) remove_tree(n->right);
     destroy_node(n);
   }
 
@@ -315,12 +315,22 @@ private:
   node* create_node(Args&&... args)
   {
     node* result = node_traits::allocate(get_allocator(), 1);
-    node_traits::construct(get_allocator(), result, std::forward<Args>(args)...);
+    try
+    {
+      node_traits::construct(get_allocator(), result, std::forward<Args>(args)...);
+    }
+    catch (...)
+    {
+      node_traits::deallocate(get_allocator(), result, 1);
+      throw;
+    }
     return result;
   }
 
+  // precondition: n != nullptr
   void destroy_node(node* n)
   {
+    assert(n);
     node_traits::destroy(get_allocator(), n);
     node_traits::deallocate(get_allocator(), n, 1);
   }
