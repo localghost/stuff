@@ -2,8 +2,6 @@
 #include <vector>
 #include <iostream>
 
-unsigned count = 0;
-
 template<typename I, typename Compare>
 unsigned count_inversions_merge(I first, I mid, I last, Compare compare)
 {
