@@ -97,21 +97,23 @@ public:
     }
   }
 
-  // FIXME This should resemble increment in post-order
   void decrement()
   {
-    if (current_->parent)
+    // If coming from the right, visit left; if not, visit parent
+    if (current_->parent && current_->parent->left && current_->parent->left != current_)
     {
-      if (current_->parent->left && current_->parent->left != current_)
-      {
-        current_ = bst_max(current_->parent->left);
-        if (current_->left) current_ = current_->left;
-      }
-      else
-        current_ = current_->parent;
+      current_ = bst_max(current_->parent->left);
+      if (current_->left) current_ = current_->left;
+    }
+    else if (current_->parent)
+    {
+      current_ = current_->parent;
     }
     else
     {
+      // FIXME This branch is only to accomodate to the fact that head is used as
+      //       end marker; what's more it introduces infinite loop (but that should
+      //       not be a real issue since decrementing begin() is undefined)
       current_ = bst_max(current_->left);
       if (current_->left) current_ = current_->left;
     }
@@ -143,17 +145,14 @@ public:
 
   explicit bst_iterator(state_type n) : current_{n} {}
 
-  state_type foo(state_type n)
-  {
-    while (n->left || n->right)
-      n = (n->left ? n->left : n->right);
-    return n;
-  }
-
   void increment()
   {
     if (current_->parent->right && current_->parent->right != current_)
-      current_ = foo(current_->parent->right);
+    {
+      current_ = current_->parent->right;
+      while (current_->left || current_->right)
+        current_ = (current_->left ? current_->left : current_->right);
+    }
     else
       current_ = current_->parent;
   }
