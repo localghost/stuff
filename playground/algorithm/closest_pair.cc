@@ -42,6 +42,10 @@ struct point
   int x;
   int y;
 };
+bool operator==(const point& a, const point& b)
+{
+  return (a.x == b.x && a.y == b.y);
+}
 
 unsigned distance(const point& x, const point& y)
 {
@@ -127,7 +131,7 @@ std::pair<point, point> closest_split_pair(const std::vector<point>& x, const st
 
 int main()
 {
-  std::vector<point> data{{1, 7}, {5, 23}, {9, 3}, {-23, 5}, {45, 4}, {14, 12}};
+  std::vector<point> data{{5, 23}, {9, 3}, {-23, 5}, {45, 4}, {14, 12}};
   for (size_t i = 0; i < data.size(); ++i)
   {
     for (size_t j = i+1; j < data.size(); ++j)
@@ -143,5 +147,8 @@ int main()
   auto res = closest_pair(px, py);
   auto res2 = closest_split_pair(px, py, distance(res.first, res.second));
   std::cout << "(" << res.first.x << ", " << res.first.y << "), (" << res.second.x << ", " << res.second.y << "), distance: " << distance(res.first, res.second) << std::endl;
+  if (res2 == std::make_pair(point{}, point{}))
+    std::cout << "split pair not found" << std::endl;
+  else
   std::cout << "(" << res2.first.x << ", " << res2.first.y << "), (" << res2.second.x << ", " << res2.second.y << "), distance: " << distance(res2.first, res2.second) << std::endl;
 }
