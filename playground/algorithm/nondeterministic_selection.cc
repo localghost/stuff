@@ -1,7 +1,6 @@
 // partition the range
 // check if searched index is smaller than index of pivot or greater
-// recurr appropriately
-//
+// recur appropriately
 
 #include <iterator>
 #include <utility>
