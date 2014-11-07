@@ -5,6 +5,8 @@
 #include <string>
 #include <sstream>
 #include <map>
+#include <unordered_map>
+#include <cstdio>
 
 struct vertex;
 struct edge;
@@ -13,14 +15,15 @@ using vertex_label = int;
 using vertices = std::list<vertex>;
 using edges = std::list<edge>;
 using labels = std::map<vertex_label, vertices::iterator>;
+using labels2 = std::unordered_map<vertex_label, vertices::iterator>;
 
 struct vertex
 {
 //	explicit vertex(vertex_label label) : label{label} {}
 
 	bool explored = false;
-	std::vector<edges::iterator> edges_out;
-	std::vector<edges::iterator> edges_in;
+	std::vector<edge> edges_out;
+	std::vector<edge> edges_in;
 };
 
 struct edge
@@ -37,10 +40,10 @@ void dfs_unorder(vertices::iterator start)
 {
   for (const auto& e : start->edges_in)
   {
-    if (!e->tail->explored)
+    if (!e.tail->explored)
     {
-      e->tail->explored = true;
-      dfs_unorder(e->tail);
+      e.tail->explored = true;
+      dfs_unorder(e.tail);
     }  
   }
   timed[++g_time] = start;
@@ -63,10 +66,10 @@ unsigned dfs_inorder(vertices::iterator start)
   unsigned result = 0;
   for (const auto& e : start->edges_out)
   {
-    if (e->head->explored)
+    if (e.head->explored)
     {
-      e->head->explored = false;
-      result += dfs_inorder(e->head) + 1;
+      e.head->explored = false;
+      result += dfs_inorder(e.head) + 1;
     }
   }
   return result;
@@ -94,7 +97,7 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
-	std::fstream f{argv[1]};
+	FILE* f = fopen(argv[1], "r");
 	if (!f)
 	{
 		std::cerr << "could not open data file" << std::endl;
@@ -104,16 +107,14 @@ int main(int argc, char** argv)
 	vertices n;
 	edges m;
 	labels l;
-	std::string line;
-	while (std::getline(f, line))
+  int last_tail = 0;
+  vertices::iterator last_tail_it;
+	while (!feof(f))
 	{
 		int head = 0;
 		int tail = 0;
+    fscanf(f, "%d %d\n", &tail, &head);
 		
-		std::istringstream iss{line};
-		iss >> tail;
-		iss >> head;
-
 		vertices::iterator head_it;
 		auto label_it = l.find(head);
 		if (l.end() != label_it)
@@ -127,23 +128,32 @@ int main(int argc, char** argv)
 		}
 
 		vertices::iterator tail_it;
-		label_it = l.find(tail);
-		if (l.end() != label_it)
+		if (last_tail == tail)
 		{
-			tail_it = label_it->second;
+			tail_it = last_tail_it;
 		}
 		else
 		{
-			tail_it = n.insert(n.end(), vertex{});
-			l[tail] = tail_it;
+      label_it = l.find(tail);
+      if (label_it != l.end())
+      {
+        tail_it = label_it->second;
+      }
+      else
+      {
+        tail_it = n.insert(n.end(), vertex{});
+        l[tail] = tail_it;
+      }
+      last_tail = tail;
+      last_tail_it = tail_it;
 		}
 
-		auto edge_it = m.insert(m.end(), {head_it, tail_it});
-		tail_it->edges_out.push_back(edge_it);
-    head_it->edges_in.push_back(edge_it);
+		edge e = {head_it, tail_it};
+		tail_it->edges_out.push_back(e);
+    head_it->edges_in.push_back(std::move(e));
 	}
 
-	f.close();
+	fclose(f);
 
 //  dfs_loop(l);
 //  dfs_loop2(timed);
