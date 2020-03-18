@@ -1,102 +1,144 @@
 set nocp
-filetype plugin on
 syntax enable
-set number
+"set number
 set hls
 set nobackup
 set nowritebackup
-set cindent
-set ts=4
-set softtabstop=4
-set shiftwidth=4
-"set textwidth=80
+set foldmethod=indent
+set foldlevel=99
+set ts=2
+set softtabstop=2
+set shiftwidth=2
 set expandtab
+set number
+set relativenumber
+set background=dark
+"set textwidth=80
 let g:load_doxygen_syntax=1
-"au BufEnter *.cpp,*.cc,*.c set foldmethod=syntax "foldclose=all
-autocmd InsertEnter * if !exists('w:last_fdm') | let w:last_fdm=&foldmethod | setlocal foldmethod=manual | endif
-autocmd InsertLeave,WinLeave * if exists('w:last_fdm') | let &l:foldmethod=w:last_fdm | unlet w:last_fdm | endif
-set cinoptions+=g0
 
-"vtreeexplorer
-let g:treeExplVertical=1
-let g:treeExplDirSort=1
-let g:treeExplWinSize=30
+filetype off
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+Plugin 'gmarik/Vundle.vim'
+Plugin 'tmhedberg/SimpylFold'
+Plugin 'vim-scripts/indentpython.vim'
+Plugin 'vim-syntastic/syntastic'
+Plugin 'ctrlpvim/ctrlp.vim'
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
+Plugin 'dag/vim-fish'
+Plugin 'airblade/vim-rooter'
+Plugin 'davidhalter/jedi-vim'
+call vundle#end()
 
-"minibufexpl
-"let g:miniBufExplMapWindowNavVim = 1 
-"let g:miniBufExplMapWindowNavArrows = 1 
-"let g:miniBufExplMapCTabSwitchBufs = 1 
-"let g:miniBufExplModSelTarget = 1 
-"let g:miniBufExplForceSyntaxEnable = 1
+set laststatus=2
+let g:airline_theme='dark'
+let g:airline_powerline_fonts=1
+let g:airline_left_sep = '»'
+let g:airline_left_sep = '▶'
+let g:airline_right_sep = '«'
+let g:airline_right_sep = '◀'
+set t_Co=256
 
-set tags+=~/.vim/tags/stl
+set undodir=~/.vimundo
+set undofile
 
-"OmniCppComplete
-let OmniCpp_NamespaceSearch = 1
-let OmniCpp_GlobalScopeSearch = 1
-let OmniCpp_ShowAccess = 1
-let OmniCpp_MayCompleteDot = 1
-let OmniCpp_MayCompleteArrow = 1
-let OmniCpp_MayCompleteScope = 1
-let OmniCpp_DefaultNamespaces = ["std", "_GLIBCXX_STD"]
-" automatically open and close the popup menu / preview window
-au CursorMovedI,InsertLeave * if pumvisible() == 0|silent! pclose|endif
-set completeopt=menuone,menu,longest,preview
+let g:SimpylFold_docstring_preview=1
+let python_highlight_all=1
+"let NERDTreeIgnore=['\.pyc$', '\~$'] "ignore files in NERDTree
+let g:ctrlp_max_files=0
+let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
+let g:ctrlp_custom_ignore = {
+  \ 'dir':  '\v[\/]\.(git|hg|svn)$',
+  \ 'file': '\v\.(exe|so|dll|pyc)$',
+  \ }
 
-"taglist
-let Tlist_Use_Right_Window = 1
+let g:rooter_manual_only = 0
+let g:rooter_patterns = ['.git/']
+let g:rooter_change_directory_for_non_project_files = 'current'
+
+filetype on
+
+highlight BadWhitespace ctermbg=green
+
+au BufNewFile,BufRead *.py
+	\ set sts=4 |
+	\ set tabstop=4 |
+	\ set shiftwidth=4 |
+	\ set textwidth=0 |
+	\ set expandtab |
+	\ set autoindent |
+	\ set fileformat=unix |
+	\ set encoding=utf-8 |
+	\ match BadWhitespace /\s\+$/
+
+"let g:ycm_autoclose_preview_window_after_completion=1
+"map <silent> \g  :YcmCompleter GoToDefinitionElseDeclaration<CR>
+"map <silent> \t  :NERDTreeToggle<CR>
 
 "Change to current working directory
 "set autochdir
-map <silent> ,cd :cd %:p:h<CR>
-
-"To change width use 'vertical resize <size>' while in explorer window
-map <silent> ,x :VSTreeExplore<CR>
-
-"Make ctags
-map <silent> ,ctl :!ctags -R --languages=c++,c --c++-kinds=+pl --fields=+iaS --extra=+q . <CR><CR>
-
-"Tlist
-map <silent> ,tt :TlistToggle<CR>
-map <silent> ,tu :TlistUpdate<CR>
+"map <silent> ,cd :cd %:p:h<CR>
 
 noremap <silent> ,zr :set foldlevel=3<CR>
 
 map <silent> ,f :set foldmethod=syntax<CR>
 
-noremap \c :s:^://:<CR>:nohls<CR>
+"noremap \c :s:^://:<CR>:nohls<CR>
 noremap \u :s:^//::<CR>:nohls<CR>
+"noremap \i :call InlineComment()<CR>
 
-set guifont=Courier\ 10\ Pitch\ 9
-colorscheme desert
-
-set guioptions-=T
+"map function to a key sequence in visual mode
+"vnoremap \( :call Parenthesize()<CR>
 
 set history=200
 
-set path=./,/usr/include,/usr/include/c++/4.6,
+nnoremap <S-Left> :tabprevious<CR>
+nnoremap <S-Right> :tabnext<CR>
 
-map <silent> sw :call SwitchSourceHeader()<CR>
-
-function SwitchSourceHeader()
-    let dest = ''
-    let ext = expand('%:e')
-    let current = expand('%:t:r')
-    let root = expand('%:p:h')
-    if ext == 'h'
-        for source_ext in ['.cpp', '.cc', '.c']
-            let dest = root . '/' . current . source_ext
-            if filereadable(dest)
-               break 
-            endif
-            let dest = ''
-        endfor
-    elseif ext == 'cpp' || ext == 'cc' || ext == 'c'
-        let dest = root . '/' . current . '.h'
-    endif
-    if dest != ''
-        execute 'edit' dest
-    else
-        echoerr 'Complementary file not found'
-    endif
-endfunction
+"function! Parenthesize()
+"	"yank current visual selection to reg x
+"	normal gv"xy
+"	"put new string value in reg x
+"	"would do your processing here in actual script
+"	let @x = '(' . @x . ')'
+"	"re-select area and delete
+"	normal gvd
+"	"paste new string value back in
+"	normal "xP
+"endfunction
+"
+"function! InlineComment()
+"	"yank current visual selection to reg x
+"	normal gv"xy
+"	"put new string value in reg x
+"	"would do your processing here in actual script
+"	let @x = '/* ' . @x . ' */'
+"	"re-select area and delete
+"	normal gvd
+"	"paste new string value back in
+"	normal "xP
+"endfunction
+"
+"function! SwitchSourceHeader()
+"    let dest = ''
+"    let ext = expand('%:e')
+"    let current = expand('%:t:r')
+"    let root = expand('%:p:h')
+"    if ext == 'h'
+"        for source_ext in ['.cpp', '.cc', '.c']
+"            let dest = root . '/' . current . source_ext
+"            if filereadable(dest)
+"               break 
+"            endif
+"            let dest = ''
+"        endfor
+"    elseif ext == 'cpp' || ext == 'cc' || ext == 'c'
+"        let dest = root . '/' . current . '.h'
+"    endif
+"    if dest != ''
+"        execute 'edit' dest
+"    else
+"        echoerr 'Complementary file not found'
+"    endif
+"endfunction
